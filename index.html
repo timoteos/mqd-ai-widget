@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>MQD AI Widget Demo</title>
+    <link rel="stylesheet" href="widget.css">
+</head>
+<body>
+    <!-- This page is intentionally blank. The chatbot widget will appear on the bottom right. -->
+        <script>
+            window.MedQuestWidgetConfig = {
+                proxyPath: "http://localhost:3000/widget-api/chat",
+                stylesheetUrl: "./widget.css",
+                position: "right"
+            };
+        </script>
+    <script src="widget.js"></script>
+</body>
+</html>
