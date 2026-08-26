@@ -143,6 +143,16 @@
 
     log.appendChild(el);
     log.scrollTop = log.scrollHeight;
+    return el;
+  }
+
+  function addTypingIndicator(log) {
+    var el = document.createElement("div");
+    el.className = "mqw-msg assistant mqw-typing-msg";
+    el.innerHTML = '<div class="mqw-typing"><span></span><span></span><span></span></div>';
+    log.appendChild(el);
+    log.scrollTop = log.scrollHeight;
+    return el;
   }
 
   function buildUi() {
@@ -226,6 +236,7 @@
       input.value = "";
       sendBtn.disabled = true;
       status.textContent = "Waiting for response...";
+      var typingEl = addTypingIndicator(log);
 
       const payload = {
         question: question,
@@ -255,9 +266,11 @@
           throw new Error(data.answer || "API request failed.");
         }
 
+        typingEl.remove();
         addMessage(log, "assistant", data.answer || "No answer returned.", data.sources || []);
         status.textContent = "Ready";
       } catch (err) {
+        typingEl.remove();
         var message = err && err.message ? err.message : "API is not working right now.";
         addMessage(log, "error", message, []);
         status.textContent = "Error";

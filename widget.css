@@ -134,6 +134,41 @@
   margin: 0.4rem 0 0.2rem 1.2rem;
 }
 
+.mqw-typing {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 0;
+}
+
+.mqw-typing span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #159d67;
+  opacity: 0.4;
+  animation: mqw-typing-bounce 1.2s infinite ease-in-out;
+}
+
+.mqw-typing span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.mqw-typing span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes mqw-typing-bounce {
+  0%, 60%, 100% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+  30% {
+    transform: translateY(-4px);
+    opacity: 1;
+  }
+}
+
 .mqw-sources {
   margin-top: 8px;
   padding-top: 8px;
