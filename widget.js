@@ -247,15 +247,23 @@
 
     panel.innerHTML = ""
       + '<div class="mqw-header">'
-      + '<button class="mqw-clear" type="button" aria-label="Clear conversation">⟲</button>'
       + "<h3>Med-QUEST Assistant</h3>"
-      + '<a class="mqw-preassess" href="https://dksph266ybqbw.cloudfront.net" target="_blank" rel="noopener noreferrer">Pre-assessment</a>'
-      + '<button class="mqw-close" type="button" aria-label="Close chat">x</button>'
+      + '<div class="mqw-header-actions">'
+      + '<a class="mqw-icon-btn mqw-preassess" href="https://dksph266ybqbw.cloudfront.net" target="_blank" rel="noopener noreferrer" aria-label="Pre-assessment" title="Pre-assessment">'
+      + '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>'
+      + "</a>"
+      + '<button class="mqw-icon-btn mqw-clear" type="button" aria-label="Clear conversation" title="Clear conversation">'
+      + '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>'
+      + "</button>"
+      + '<button class="mqw-icon-btn mqw-close" type="button" aria-label="Close chat" title="Close chat">'
+      + '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>'
+      + "</button>"
+      + "</div>"
       + "</div>"
       + '<p class="mqw-disclaimer">This assistant gives general information only and is not an official Med-QUEST determination. For decisions about your case, contact Med-QUEST directly.</p>'
       + '<div class="mqw-log" id="mqw-log" role="log" aria-live="polite" aria-relevant="additions"></div>'
       + '<form class="mqw-form" id="mqw-form">'
-      + '<textarea id="mqw-question" placeholder="Ask a question..." required></textarea>'
+      + '<textarea id="mqw-question" rows="1" placeholder="Ask a question..." required></textarea>'
       + '<div class="mqw-row">'
       + '<span class="mqw-status" id="mqw-status">Ready</span>'
       + '<button class="mqw-send" id="mqw-send" type="submit">Send</button>'
@@ -367,7 +375,22 @@
 
       addMessage(log, "user", question, []);
       input.value = "";
+      input.style.height = "";
       sendQuestion(question);
+    });
+
+    input.addEventListener("keydown", function (event) {
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        if (!sendBtn.disabled) {
+          form.requestSubmit();
+        }
+      }
+    });
+
+    input.addEventListener("input", function () {
+      input.style.height = "";
+      input.style.height = Math.min(input.scrollHeight, 120) + "px";
     });
   }
 
