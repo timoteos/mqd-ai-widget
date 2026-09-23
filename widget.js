@@ -9,6 +9,7 @@
   var position = config.position === "right" ? "right" : "left";
   var userId = generateId();
   var sessionId = generateId();
+  var GREETING = "### Aloha\nI can help answer Med-QUEST questions. Ask me anything about coverage, forms, or services.";
 
   function generateId() {
     return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
@@ -112,7 +113,8 @@
     return out.join("");
   }
 
-  function addMessage(log, role, text, sources) {
+  function addMessage(log, role, text, sources, options) {
+    var opts = options || {};
     var el = document.createElement("div");
     el.className = "mqw-msg " + role;
 
@@ -141,15 +143,85 @@
       el.appendChild(sourceWrap);
     }
 
+    if (role === "assistant" && opts.feedback) {
+      el.appendChild(buildFeedbackControls(text));
+    }
+
+    if (role === "error" && typeof opts.onRetry === "function") {
+      var retryBtn = document.createElement("button");
+      retryBtn.type = "button";
+      retryBtn.className = "mqw-retry";
+      retryBtn.textContent = "Retry";
+      retryBtn.addEventListener("click", function () {
+        retryBtn.disabled = true;
+        opts.onRetry();
+      });
+      el.appendChild(retryBtn);
+    }
+
     log.appendChild(el);
     log.scrollTop = log.scrollHeight;
     return el;
   }
 
+  function buildFeedbackControls(answerText) {
+    var wrap = document.createElement("div");
+    wrap.className = "mqw-feedback";
+
+    var label = document.createElement("span");
+    label.className = "mqw-feedback-label";
+    label.textContent = "Was this helpful?";
+    wrap.appendChild(label);
+
+    var up = document.createElement("button");
+    up.type = "button";
+    up.className = "mqw-feedback-btn";
+    up.setAttribute("aria-label", "Helpful");
+    up.textContent = "👍";
+
+    var down = document.createElement("button");
+    down.type = "button";
+    down.className = "mqw-feedback-btn";
+    down.setAttribute("aria-label", "Not helpful");
+    down.textContent = "👎";
+
+    function submitFeedback(vote, chosenBtn, otherBtn) {
+      // No feedback endpoint exists yet — logged for now so the signal
+      // isn't silently dropped once one does.
+      console.log("MedQuest Widget feedback:", {
+        vote: vote,
+        answer: answerText,
+        userId: userId,
+        sessionId: sessionId
+      });
+
+      chosenBtn.classList.add("selected");
+      chosenBtn.disabled = true;
+      otherBtn.disabled = true;
+
+      var thanks = document.createElement("span");
+      thanks.className = "mqw-feedback-thanks";
+      thanks.textContent = "Thanks for your feedback!";
+      wrap.appendChild(thanks);
+    }
+
+    up.addEventListener("click", function () {
+      submitFeedback("up", up, down);
+    });
+    down.addEventListener("click", function () {
+      submitFeedback("down", down, up);
+    });
+
+    wrap.appendChild(up);
+    wrap.appendChild(down);
+    return wrap;
+  }
+
   function addTypingIndicator(log) {
     var el = document.createElement("div");
     el.className = "mqw-msg assistant mqw-typing-msg";
-    el.innerHTML = '<div class="mqw-typing"><span></span><span></span><span></span></div>';
+    el.innerHTML = '<span class="mqw-sr-only">Assistant is typing…</span>'
+      + '<div class="mqw-typing" aria-hidden="true"><span></span><span></span><span></span></div>';
     log.appendChild(el);
     log.scrollTop = log.scrollHeight;
     return el;
@@ -175,11 +247,13 @@
 
     panel.innerHTML = ""
       + '<div class="mqw-header">'
+      + '<button class="mqw-clear" type="button" aria-label="Clear conversation">⟲</button>'
       + "<h3>Med-QUEST Assistant</h3>"
       + '<a class="mqw-preassess" href="https://dksph266ybqbw.cloudfront.net" target="_blank" rel="noopener noreferrer">Pre-assessment</a>'
       + '<button class="mqw-close" type="button" aria-label="Close chat">x</button>'
       + "</div>"
-      + '<div class="mqw-log" id="mqw-log"></div>'
+      + '<p class="mqw-disclaimer">This assistant gives general information only and is not an official Med-QUEST determination. For decisions about your case, contact Med-QUEST directly.</p>'
+      + '<div class="mqw-log" id="mqw-log" role="log" aria-live="polite" aria-relevant="additions"></div>'
       + '<form class="mqw-form" id="mqw-form">'
       + '<textarea id="mqw-question" placeholder="Ask a question..." required></textarea>'
       + '<div class="mqw-row">'
@@ -191,6 +265,7 @@
     document.body.appendChild(launcher);
     document.body.appendChild(panel);
 
+    var clearBtn = panel.querySelector(".mqw-clear");
     var closeBtn = panel.querySelector(".mqw-close");
     var log = panel.querySelector("#mqw-log");
     var form = panel.querySelector("#mqw-form");
@@ -217,23 +292,22 @@
 
     closeBtn.addEventListener("click", closePanel);
 
-    addMessage(
-      log,
-      "assistant",
-      "### Aloha\nI can help answer Med-QUEST questions. Ask me anything about coverage, forms, or services.",
-      []
-    );
+    function showGreeting() {
+      addMessage(log, "assistant", GREETING, []);
+    }
 
-    form.addEventListener("submit", async function (event) {
-      event.preventDefault();
+    clearBtn.addEventListener("click", function () {
+      log.innerHTML = "";
+      userId = generateId();
+      sessionId = generateId();
+      status.textContent = "Ready";
+      showGreeting();
+      input.focus();
+    });
 
-      var question = input.value.trim();
-      if (!question) {
-        return;
-      }
+    showGreeting();
 
-      addMessage(log, "user", question, []);
-      input.value = "";
+    async function sendQuestion(question) {
       sendBtn.disabled = true;
       status.textContent = "Waiting for response...";
       var typingEl = addTypingIndicator(log);
@@ -267,16 +341,33 @@
         }
 
         typingEl.remove();
-        addMessage(log, "assistant", data.answer || "No answer returned.", data.sources || []);
+        addMessage(log, "assistant", data.answer || "No answer returned.", data.sources || [], { feedback: true });
         status.textContent = "Ready";
       } catch (err) {
         typingEl.remove();
         var message = err && err.message ? err.message : "API is not working right now.";
-        addMessage(log, "error", message, []);
+        addMessage(log, "error", message, [], {
+          onRetry: function () {
+            sendQuestion(question);
+          }
+        });
         status.textContent = "Error";
       } finally {
         sendBtn.disabled = false;
       }
+    }
+
+    form.addEventListener("submit", function (event) {
+      event.preventDefault();
+
+      var question = input.value.trim();
+      if (!question) {
+        return;
+      }
+
+      addMessage(log, "user", question, []);
+      input.value = "";
+      sendQuestion(question);
     });
   }
 
