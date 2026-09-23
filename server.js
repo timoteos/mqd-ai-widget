@@ -15,11 +15,15 @@ app.use(express.json({
     req.rawBody = buf.toString("utf8");
   }
 }));
-app.use(express.static(path.join(__dirname)));
-
 app.get(["/", "/index.html"], (_req, res) => {
+  res.sendFile(path.join(__dirname, "website", "index.html"));
+});
+
+app.get("/demo", (_req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
+
+app.use(express.static(path.join(__dirname), { index: false }));
 
 app.post("/widget-api/chat", async (req, res) => {
   try {
