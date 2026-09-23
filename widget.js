@@ -265,7 +265,7 @@
       + '<form class="mqw-form" id="mqw-form">'
       + '<textarea id="mqw-question" rows="1" placeholder="Ask a question..." required></textarea>'
       + '<div class="mqw-row">'
-      + '<span class="mqw-status" id="mqw-status">Ready</span>'
+      + '<span class="mqw-status" id="mqw-status"></span>'
       + '<button class="mqw-send" id="mqw-send" type="submit">Send</button>'
       + "</div>"
       + "</form>";
@@ -313,7 +313,7 @@
       log.innerHTML = "";
       userId = generateId();
       sessionId = generateId();
-      status.textContent = "Ready";
+      status.textContent = "";
       showGreeting();
       input.focus();
     });
@@ -355,7 +355,7 @@
 
         typingEl.remove();
         addMessage(log, "assistant", data.answer || "No answer returned.", data.sources || [], { feedback: true });
-        status.textContent = "Ready";
+        status.textContent = "";
       } catch (err) {
         typingEl.remove();
         var message = err && err.message ? err.message : "API is not working right now.";

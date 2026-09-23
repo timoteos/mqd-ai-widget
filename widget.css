@@ -156,7 +156,10 @@
 .mqw-msg h2,
 .mqw-msg h3,
 .mqw-msg h4 {
-  margin: 0.3rem 0 0.5rem;
+  margin: 0 0 4px;
+  font-size: 1em;
+  font-weight: 700;
+  line-height: inherit;
 }
 
 .mqw-msg p {
@@ -309,11 +312,19 @@
   font-size: 13.5px;
   line-height: 1.35;
   color: var(--mqw-ink);
+  background: var(--mqw-bg);
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.mqw-form textarea::placeholder {
+  color: var(--mqw-muted);
+  opacity: 1;
 }
 
 .mqw-form textarea:focus {
   outline: none;
   border-color: var(--mqw-primary);
+  box-shadow: 0 0 0 3px rgba(32, 131, 128, 0.12);
 }
 
 .mqw-row {
