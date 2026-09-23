@@ -281,6 +281,11 @@
     var sendBtn = panel.querySelector("#mqw-send");
     var status = panel.querySelector("#mqw-status");
 
+    function resizeInput() {
+      input.style.height = "1px";
+      input.style.height = Math.min(input.scrollHeight, 120) + "px";
+    }
+
     function openPanel() {
       panel.setAttribute("data-open", "true");
       input.focus();
@@ -375,7 +380,7 @@
 
       addMessage(log, "user", question, []);
       input.value = "";
-      input.style.height = "";
+      resizeInput();
       sendQuestion(question);
     });
 
@@ -388,10 +393,11 @@
       }
     });
 
-    input.addEventListener("input", function () {
-      input.style.height = "";
-      input.style.height = Math.min(input.scrollHeight, 120) + "px";
-    });
+    input.addEventListener("input", resizeInput);
+    // The browser's own rows-based sizing can be thrown off by CSS the
+    // host page loads (seen when embedded on medquest.hawaii.gov), so the
+    // height is always set explicitly rather than left to intrinsic sizing.
+    resizeInput();
   }
 
   loadStyles();
