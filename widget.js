@@ -174,7 +174,14 @@
     }
 
     log.appendChild(el);
-    log.scrollTop = log.scrollHeight;
+    if (role === "assistant") {
+      // Start reading at the top of the answer. Jumping to the bottom hides
+      // the start of a long answer and makes the reader scroll back up. The
+      // browser stops at the bottom, so a short answer still ends up there.
+      log.scrollTop += el.getBoundingClientRect().top - log.getBoundingClientRect().top - 14;
+    } else {
+      log.scrollTop = log.scrollHeight;
+    }
     return el;
   }
 

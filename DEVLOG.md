@@ -2,6 +2,15 @@
 
 Newest first. Timestamps pulled from git history.
 
+## 2026-11-10 15:05 — Answers open at their first line; test page chat fixed
+
+- After a reply arrives the chat scrolls to the top of the answer instead of
+  the bottom, so a long answer is read from its first line. Short answers
+  still sit at the bottom.
+- The plain test page (`/demo`) had the chat address hardcoded to
+  `localhost:3000`, so every question failed on any other port or host. It
+  now uses the address the page is served from.
+
 ## 2026-11-10 14:40 — Showcase page rebuilt as a recording of the new site
 
 medquest.hawaii.gov was rebuilt (Adobe AEM to Next.js), so every stylesheet
