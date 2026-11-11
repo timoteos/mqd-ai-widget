@@ -41,10 +41,19 @@ PREASSESS_QUESTIONS = [
 ]
 
 # --- Privacy Patterns ---
-SSN_PATTERN = re.compile(r"\b\d{3}-?\d{2}-?\d{4}\b")
+# 3-2-4 with dashes, or nine digits in a row. The dashes used to be optional,
+# which also matched a ZIP+4 (96809-3490) and hid Med-QUEST's mailing address.
+SSN_PATTERN = re.compile(r"\b(?:\d{3}-\d{2}-\d{4}|\d{9})\b")
 CREDIT_CARD_PATTERN = re.compile(r"\b(?:\d[ -]*?){13,19}\b")
 DOB_PATTERN = re.compile(r"\b(?:0?[1-9]|1[0-2])[/-](?:0?[1-9]|[12]\d|3[01])[/-](?:19|20)\d{2}\b")
 EMAIL_PATTERN = re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b")
+# State addresses are published contact details, so answers may show them.
+PUBLIC_EMAIL_DOMAIN = re.compile(r"@(?:[A-Za-z0-9-]+\.)*hawaii\.gov$", re.IGNORECASE)
+
+GUARDRAIL_FALLBACK = (
+    "I'm not able to answer that one here. For help with your question, "
+    "please call Med-QUEST Customer Service at 1-800-316-8005 (TTY 711)."
+)
 
 # --- Main Handler ---
 def lambda_handler(event, context):
@@ -114,7 +123,7 @@ def handle_preassessment(user_id, session_id, preassess_state, user_question, hi
         enriched_question = (
             f"User question: {pa_result.get('original_question', '')}\n"
             f"Collected pre-assessment facts: {json.dumps(pa_result['answers'])}\n"
-            "Provide guidance only; do not make official eligibility determinations."
+            "Summarize what they told you and what eligibility depends on. Do not state any income limits or say whether they are likely to qualify; explain that applying or calling 1-800-316-8005 is how to find out."
         )
         # Pass the history to the RAG function
         answer, citations = run_rag(enriched_question, history, intent_override="eligibility")
@@ -259,14 +268,21 @@ def run_rag(user_question, history, intent_override=None):
 
 def generate_from_context(user_question, combined_context, history):
     system_prompt = """<system>
-You are a helpful, stateful AI assistant named Aloha. Your ONLY purpose is to answer questions about Med-QUEST using the provided context.
+You are Aloha, the assistant on the Med-QUEST website. Your ONLY purpose is to answer questions about Med-QUEST, Hawaii's Medicaid program, using the reference documents provided with each question.
 
-**CRITICAL RULES:**
-1.  **YOU HAVE A MEMORY.** The user is testing you. The conversation history is provided in the <history> messages. Use it to remember the user's name and what you have already discussed.
-2.  **DO NOT BE EVASIVE.** If the user asks what their name is, and it's in the history, state their name. If they ask about your memory, confirm that you remember the conversation. Do not claim you are stateless or cannot access information.
-3.  **BE DIRECT AND CONCISE.** Use short sentences and bullet points. Avoid conversational filler.
-4.  **STICK TO THE FACTS.** Use ONLY the "Contextual Information" to answer questions. If the answer is not in the context, say "I do not have that information, please call Med-QUEST at 1-800-316-8005." Do not use your general knowledge.
-5.  **SAFETY.** Never repeat sensitive data (SSN, DOB, etc.).
+**RULES:**
+1. **USE THE CONVERSATION.** Earlier messages are provided in <history> tags. Use them to understand follow-up questions and to remember what the user has told you, such as their name.
+2. **BE DIRECT AND CONCISE.** Use short sentences and bullet points. Avoid conversational filler.
+3. **STICK TO THE DOCUMENTS.** Answer ONLY from the reference documents. If the answer is not there, say: "I don't have that information. Please call Med-QUEST at 1-800-316-8005." Do not use general knowledge.
+4. **NEVER MENTION THE DOCUMENTS.** Answer as if you simply know the information. Never say "based on the provided information", "in the context", "the documents" or similar.
+5. **NO INCOME FIGURES.** Never state a dollar income limit, an income chart, or a percentage of the Federal Poverty Level, even if the user asks for one directly and even if the documents contain one. The charts in the documents are split up and easy to misread, and a wrong figure could stop someone from applying. Instead:
+   - Explain what eligibility depends on (household size, income, age, pregnancy, disability), using the documents.
+   - Never say whether the person does or does not qualify, or is likely to, or is above or below a limit.
+   - Tell them that applying is the only way to find out, and that it is free: online through KOLEA, or by calling Med-QUEST at 1-800-316-8005, who can also tell them the current income limits for their household.
+   - Everyone using this site is asking about Hawaii, so never ask which state they live in.
+   - Describe their income neutrally if you mention it at all. Never judge it, as in "very low", "quite low", "only", "poor" or "struggling".
+6. **LANGUAGE.** If the user writes in another language, answer in that language only if you can do so accurately. Otherwise answer in English and mention that free interpreter services are available at 1-800-316-8005.
+7. **SAFETY.** Never repeat sensitive data (SSN, date of birth, etc.).
 </system>"""
 
     messages = []
@@ -278,7 +294,7 @@ You are a helpful, stateful AI assistant named Aloha. Your ONLY purpose is to an
             messages.append({"role": role, "content": f"<history>{text}</history>"})
 
     # Add the current user question
-    messages.append({"role": "user", "content": f"Contextual Information:\n{combined_context}\n\nUser Question: {user_question}"})
+    messages.append({"role": "user", "content": f"<documents>\n{combined_context}\n</documents>\n\nUser question: {user_question}"})
 
     print(f"--- BEDROCK PROMPT ---")
     print(json.dumps(messages, indent=2))
@@ -286,15 +302,21 @@ You are a helpful, stateful AI assistant named Aloha. Your ONLY purpose is to an
 
     prompt_body = {"anthropic_version": "bedrock-2023-05-31", "max_tokens": 800, "system": system_prompt, "messages": messages}
     
-    response = bedrock_runtime.invoke_model(modelId=MODEL_ARN, body=json.dumps(prompt_body), guardrailIdentifier=GUARDRAIL_ID, guardrailVersion=GUARDRAIL_VERSION)
+    # trace=ENABLED records which guardrail filter fired, so a block can be explained
+    # from the logs. Without it the response only says that the guardrail intervened.
+    response = bedrock_runtime.invoke_model(modelId=MODEL_ARN, body=json.dumps(prompt_body), guardrailIdentifier=GUARDRAIL_ID, guardrailVersion=GUARDRAIL_VERSION, trace="ENABLED")
     result_body = json.loads(response.get("body").read())
 
     print(f"--- BEDROCK RESPONSE ---")
     print(json.dumps(result_body, indent=2))
     print(f"--- END BEDROCK RESPONSE ---")
 
-    if result_body.get("stop_reason") == "guardrail_intervention":
-        return "I can only help with Med-QUEST related questions. For assistance, call 1-800-316-8005.", []
+    # A block is not always reported through stop_reason: Bedrock can return the
+    # guardrail's own blocked message as ordinary text, which reached users as
+    # "Sorry, this question could not be answered." Check both signals.
+    if result_body.get("amazon-bedrock-guardrailAction") == "INTERVENED" or result_body.get("stop_reason") == "guardrail_intervention":
+        print(f"GUARDRAIL INTERVENED: {json.dumps(result_body.get('amazon-bedrock-trace', {}))}")
+        return GUARDRAIL_FALLBACK, []
     
     return result_body.get("content", [{}])[0].get("text", "I am sorry, I could not generate a response."), []
 
@@ -303,9 +325,9 @@ def contains_sensitive_value(text):
 
 def redact_sensitive_output(text):
     if not isinstance(text, str): return ""
-    for pattern, replacement in [(SSN_PATTERN, "[redacted]"), (CREDIT_CARD_PATTERN, "[redacted]"), (DOB_PATTERN, "[redacted]"), (EMAIL_PATTERN, "[redacted]")]:
-        text = pattern.sub(replacement, text)
-    return text
+    for pattern in [SSN_PATTERN, CREDIT_CARD_PATTERN, DOB_PATTERN]:
+        text = pattern.sub("[redacted]", text)
+    return EMAIL_PATTERN.sub(lambda m: m.group(0) if PUBLIC_EMAIL_DOMAIN.search(m.group(0)) else "[redacted]", text)
 
 def build_response(status_code, body):
     return {
