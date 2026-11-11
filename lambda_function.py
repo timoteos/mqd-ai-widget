@@ -3,6 +3,7 @@ import boto3
 import uuid
 import re
 import os
+import math
 from datetime import datetime, timedelta, timezone
 from difflib import SequenceMatcher
 from concurrent.futures import ThreadPoolExecutor
@@ -39,6 +40,121 @@ PREASSESS_QUESTIONS = [
     {"id": "pregnant", "q": "Is anyone applying currently pregnant? (yes/no)"},
     {"id": "hawaii_resident", "q": "Do you currently live in Hawaii? (yes/no)"}
 ]
+
+# --- Eligibility estimate ---
+# The estimate is worked out here, in code, and never by the model. The model
+# kept reading the wrong row of the income chart (the 2-person limit for a
+# household of 3), which tells families who may qualify that they do not.
+#
+# TEMPORARY, UNVERIFIED FIGURES: the 2025 federal poverty guideline for Hawaii
+# and the percentages on the 01/01/2025 income chart. Med-QUEST staff have not
+# checked them, and they change every year.
+FPL_YEAR = 2025
+FPL_FIRST_PERSON = 17990
+FPL_EACH_ADDITIONAL = 6330
+INCOME_GROUPS = {
+    "child": {"label": "Children ages 0-18", "percent": 313},
+    "pregnant": {"label": "Pregnant applicants", "percent": 196},
+    "adult": {"label": "Adults ages 19-64", "percent": 138},
+    "senior": {"label": "Adults age 65 and over", "percent": 100},
+}
+NUMBER_WORDS = {"one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8, "nine": 9, "ten": 10}
+
+def monthly_limit(group, household_size):
+    annual = FPL_FIRST_PERSON + FPL_EACH_ADDITIONAL * (household_size - 1)
+    return math.ceil(annual * INCOME_GROUPS[group]["percent"] / 100 / 12)
+
+def parse_household_size(text):
+    s = normalize_text(text)
+    m = re.search(r"\d+", s)
+    if m:
+        size = int(m.group())
+    else:
+        size = next((n for word, n in NUMBER_WORDS.items() if re.search(rf"\b{word}\b", s)), None)
+        if size is None and re.search(r"\b(just me|only me|myself|alone)\b", s):
+            size = 1
+    return size if size and 1 <= size <= 20 else None
+
+def parse_monthly_income(text):
+    # Not normalize_text: it drops the comma and the decimal point in "$3,000.50".
+    s = text.lower().replace(",", "")
+    m = re.search(r"(\d+(?:\.\d+)?)\s*(k\b)?", s)
+    if not m:
+        return 0.0 if re.search(r"\b(none|nothing|no income|zero)\b", s) else None
+    amount = float(m.group(1)) * (1000 if m.group(2) else 1)
+    if re.search(r"year|annual", s):
+        amount /= 12
+    elif re.search(r"every two weeks|every 2 weeks|biweekly|bi-weekly", s):
+        amount = amount * 26 / 12
+    elif re.search(r"week", s):
+        amount = amount * 52 / 12
+    return amount
+
+def parse_group(age_text, pregnant_text):
+    if normalize_text(pregnant_text).startswith("y"):
+        return "pregnant"
+    s = age_text.lower()
+    numbers = [int(n) for n in re.findall(r"\d+", s)]
+    # "19-64" and "65+" are read by their first number.
+    first = numbers[0] if numbers else None
+    if "senior" in s or (first is not None and first >= 65):
+        return "senior"
+    if "child" in s or "kid" in s or (first is not None and first <= 18):
+        return "child"
+    return "adult"
+
+def build_estimate(answers):
+    """The estimate as chat text, or None when an answer could not be read."""
+    size = parse_household_size(answers.get("household_size", ""))
+    income = parse_monthly_income(answers.get("monthly_income", ""))
+    if size is None or income is None:
+        return None
+
+    apply_lines = (
+        "**Applying is the only way to know for sure, and it is free:**\n"
+        "- Online through KOLEA at medquest.hawaii.gov\n"
+        "- By phone: **1-800-316-8005** (TTY 711)"
+    )
+    if normalize_text(answers.get("hawaii_resident", "")).startswith("n"):
+        return (
+            "Med-QUEST is for people who live in Hawaii. If you live in another state, "
+            "that state's Medicaid office can help you. If you are moving to Hawaii, "
+            "call Med-QUEST at **1-800-316-8005** (TTY 711)."
+        )
+
+    group = parse_group(answers.get("age_group", ""), answers.get("pregnant", ""))
+    limit = monthly_limit(group, size)
+    people = "1 person" if size == 1 else f"{size} people"
+    lines = [
+        "Here is an estimate from what you told me. It is not a decision.",
+        "",
+        f"- Household: {people}",
+        f"- Monthly income: ${income:,.0f}",
+        f"- {INCOME_GROUPS[group]['label']}: the monthly income limit is about **${limit:,}**",
+        "",
+    ]
+    if income <= limit:
+        lines.append("Your income is under that limit, so **you may qualify**.")
+    else:
+        lines.append(
+            "Your income is over that limit. **You may still qualify another way**, "
+            "because Med-QUEST looks at more than income, so it is still worth applying."
+        )
+    child_limit = monthly_limit("child", size)
+    if group != "child" and size >= 2 and income <= child_limit:
+        lines.append(
+            f"Children in the household have a higher limit, about **${child_limit:,}** a month, "
+            "so they may qualify even when an adult does not."
+        )
+    if group == "senior":
+        lines.append("For people 65 and over, savings and other assets are also looked at.")
+    lines += [
+        "",
+        apply_lines,
+        "",
+        f"*This estimate uses {FPL_YEAR} income limits, which change each year. Med-QUEST makes the decision.*",
+    ]
+    return "\n".join(lines)
 
 # --- Privacy Patterns ---
 # 3-2-4 with dashes, or nine digits in a row. The dashes used to be optional,
@@ -120,6 +236,13 @@ def handle_preassessment(user_id, session_id, preassess_state, user_question, hi
     pa_result = continue_preassessment(preassess_state, user_question)
     
     if pa_result["done"]:
+        estimate = build_estimate(pa_result["answers"])
+        if estimate:
+            update_session_state(user_id, session_id, {"preassess_state": {"active": False, "step": 0, "answers": {}}})
+            save_message(session_id, "assistant", estimate)
+            return build_response(200, {"answer": estimate, "session_id": session_id, "sources": []})
+
+        # An answer could not be read as a number, so no estimate is given.
         enriched_question = (
             f"User question: {pa_result.get('original_question', '')}\n"
             f"Collected pre-assessment facts: {json.dumps(pa_result['answers'])}\n"
@@ -259,7 +382,10 @@ def retrieve_and_assess(user_question):
 
 def should_start_preassessment(user_question, answerability):
     q_norm = normalize_text(user_question)
-    vague = len(q_norm.split()) < 7 or "eligible" in q_norm
+    # Someone asking about themselves ("would I qualify", "do we qualify"), not
+    # a general question that happens to contain the word.
+    asking_for_self = re.search(r"\b(do|does|would|will|can|could|might) (i|we|my (family|household|kids|children|child|son|daughter))\b[a-z ]{0,15}\bqualify\b", q_norm)
+    vague = len(q_norm.split()) < 7 or "eligible" in q_norm or bool(asking_for_self)
     return answerability["intent"] == "eligibility" and (vague or answerability["confidence"] <= 1)
 
 def run_rag(user_question, history, intent_override=None):

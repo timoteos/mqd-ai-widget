@@ -2,6 +2,33 @@
 
 Newest first. Timestamps pulled from git history.
 
+## 2026-11-10 15:03 — Eligibility estimate, worked out in code (temporary figures)
+
+Added for the demo. The live Lambda already runs this version.
+
+- The five eligibility questions now end in an estimate: the income limit
+  for the household and whether the income is under or over it. The
+  comparison is done in `lambda_function.py`, not by the model, so the same
+  answers always give the same result. The model had been reading the wrong
+  row of the income chart.
+- Over the limit never gets a "no": it says the person may still qualify
+  another way and should apply. If household size or income cannot be read
+  as a number, there is no estimate and the old "apply to find out" reply
+  is used.
+- Questions about yourself ("would I qualify?", "do we qualify?") now start
+  the five questions. General questions that contain the word do not.
+
+**The figures are not verified.** They are calculated from the 2025 Hawaii
+poverty guideline and these percentages: adults 19-64 138%, children 313%,
+pregnant 196%, 65 and over 100%. Only three were matched against the chart
+(adults, households of 1 and 2; 65 and over, household of 1). Med-QUEST
+staff need to check them and supply the current year's before real use.
+
+**Not done:** the estimate is English only; the bot asks for household size
+and income again even when the first question gave them; "me and my 2 kids"
+is read as 2 people; there is no way out of the questions part-way through;
+asked afterwards to repeat the limit, the bot refuses.
+
 ## 2026-11-10 15:05 — Answers open at their first line; test page chat fixed
 
 - After a reply arrives the chat scrolls to the top of the answer instead of
