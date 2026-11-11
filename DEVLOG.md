@@ -2,6 +2,27 @@
 
 Newest first. Timestamps pulled from git history.
 
+## 2026-11-10 14:40 — Showcase page rebuilt as a recording of the new site
+
+medquest.hawaii.gov was rebuilt (Adobe AEM to Next.js), so every stylesheet
+and image the replica borrowed from it stopped loading and the page showed as
+unstyled HTML.
+
+- `/` is now a recording of the new home page: its HTML plus the stylesheets,
+  scripts, font and images it loads, saved in `website/live` and served by
+  `server.js` at the addresses the page asks for. The menus and the carousel
+  work, and it does not depend on the live site. Only the home page was
+  recorded, so a link to any other page opens the real site in a new tab.
+- `/screenshot` is the fallback: a picture of the home page
+  (`website/medquest-home.jpg`) with the widget on top. Nothing on it is
+  clickable, and nothing on it can break.
+- Cloudflare's scripts (analytics, bot checks) were removed from the
+  recording. The site's own accessibility button still loads from its vendor.
+
+Both have to be retaken if the site's look changes. The recording was made
+with headless Chrome over the DevTools protocol, because the site refuses
+requests that do not come from a browser.
+
 ## 2026-11-10 14:10 — Backend outage, guardrail blocks, eligibility answers
 
 **Outage (fixed in AWS, not in code):** every question failed with a 500

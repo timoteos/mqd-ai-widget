@@ -1,3 +1,4 @@
+const fs = require("fs");
 const path = require("path");
 const express = require("express");
 const dotenv = require("dotenv");
@@ -21,6 +22,50 @@ app.get(["/", "/index.html"], (_req, res) => {
 
 app.get("/demo", (_req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
+});
+
+// The showcase page before it was a recording: a picture of the home page with
+// the widget on top. Kept as a fallback, because a picture cannot break.
+app.get("/screenshot", (_req, res) => {
+  res.sendFile(path.join(__dirname, "website", "screenshot.html"));
+});
+
+// The showcase page at "/" is a recording of medquest.hawaii.gov's home page.
+// Its stylesheets, scripts, fonts and images were recorded with it and are
+// served from here at the addresses the page asks for, so the page does not
+// depend on the live site. The site's file names change on every deploy, and
+// it refuses requests that do not come from a browser, so neither linking to
+// its files nor fetching them from this server works.
+const recordedDir = path.join(__dirname, "website", "live");
+const recorded = fs.existsSync(path.join(recordedDir, "manifest.json"))
+  ? JSON.parse(fs.readFileSync(path.join(recordedDir, "manifest.json"), "utf8"))
+  : {};
+
+// An image was recorded at the sizes the recording browser asked for. A
+// different screen asks for a different size, so fall back to the largest
+// recorded copy of the same image, and to the same path with another query.
+const imageSource = (address) => new URL(address, "http://localhost").searchParams.get("url");
+const imageWidth = (address) => Number(new URL(address, "http://localhost").searchParams.get("w")) || 0;
+
+function findRecorded(req) {
+  if (recorded[req.originalUrl]) return recorded[req.originalUrl];
+  const keys = Object.keys(recorded);
+  if (req.path === "/_next/image") {
+    const source = imageSource(req.originalUrl);
+    const sizes = keys
+      .filter((key) => key.startsWith("/_next/image?") && imageSource(key) === source)
+      .sort((x, y) => imageWidth(y) - imageWidth(x));
+    return sizes.length ? recorded[sizes[0]] : null;
+  }
+  const samePath = keys.find((key) => key.split("?")[0] === req.path);
+  return samePath ? recorded[samePath] : null;
+}
+
+app.get("*", (req, res, next) => {
+  const hit = findRecorded(req);
+  if (!hit) return next();
+  res.type(hit.type);
+  res.sendFile(path.join(recordedDir, hit.file));
 });
 
 app.use(express.static(path.join(__dirname), { index: false }));

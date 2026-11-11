@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Med-QUEST Division — widget showcase</title>
+    <style>
+        /* The page is a picture of medquest.hawaii.gov, not a copy of its
+           markup. The earlier copy borrowed the live site's stylesheets and
+           images, and lost all of them when the site was rebuilt. A picture
+           cannot break that way; the cost is that nothing on it is clickable. */
+        html, body { margin: 0; background: #272a3a; }
+        img.backdrop { display: block; width: 100%; height: auto; }
+    </style>
+</head>
+<body>
+    <img class="backdrop" src="/website/medquest-home.jpg" width="2880" height="4280"
+         alt="Screenshot of the Med-QUEST Division home page, medquest.hawaii.gov, taken 10 November 2026">
+
+    <!-- MQD AI Widget — showcase embed, not part of the original medquest.hawaii.gov page -->
+    <script>
+        window.MedQuestWidgetConfig = {
+            proxyPath: "/widget-api/chat",
+            stylesheetUrl: "/widget.css",
+            position: "right"
+        };
+    </script>
+    <script src="/widget.js"></script>
+</body>
+</html>
