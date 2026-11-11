@@ -50,66 +50,80 @@
     var safe = escapeHtml(input || "");
     var lines = safe.split(/\r?\n/);
     var out = [];
-    var inList = false;
+    // Stack of open lists: { tag: "ul" | "ol", indent: number, liOpen: boolean }
+    var stack = [];
+    var pendingBlank = false;
+
+    function closeTop() {
+      var top = stack.pop();
+      out.push((top.liOpen ? "</li>" : "") + "</" + top.tag + ">");
+    }
+
+    function closeAll() {
+      while (stack.length) {
+        closeTop();
+      }
+    }
 
     for (var i = 0; i < lines.length; i += 1) {
-      var line = lines[i].trim();
+      var raw = lines[i].replace(/\t/g, "    ");
+      var line = raw.trim();
 
       if (!line) {
-        if (inList) {
-          out.push("</ul>");
-          inList = false;
-        }
+        pendingBlank = true;
         continue;
       }
 
-      if (/^###\s+/.test(line)) {
-        if (inList) {
-          out.push("</ul>");
-          inList = false;
-        }
-        out.push("<h3>" + formatInline(line.replace(/^###\s+/, "")) + "</h3>");
+      var heading = /^(#{1,3})\s+(.*)$/.exec(line);
+      if (heading) {
+        closeAll();
+        var level = heading[1].length;
+        out.push("<h" + level + ">" + formatInline(heading[2]) + "</h" + level + ">");
+        pendingBlank = false;
         continue;
       }
 
-      if (/^##\s+/.test(line)) {
-        if (inList) {
-          out.push("</ul>");
-          inList = false;
+      var item = /^([-*]|\d+[.)])\s+(.*)$/.exec(line);
+      if (item) {
+        var indent = raw.length - raw.replace(/^\s+/, "").length;
+        var tag = /^\d/.test(item[1]) ? "ol" : "ul";
+
+        while (stack.length && indent < stack[stack.length - 1].indent) {
+          closeTop();
         }
-        out.push("<h2>" + formatInline(line.replace(/^##\s+/, "")) + "</h2>");
+
+        var top = stack[stack.length - 1];
+        if (top && indent === top.indent && top.tag !== tag) {
+          closeTop();
+          top = stack[stack.length - 1];
+        }
+
+        if (!top || indent > top.indent) {
+          out.push("<" + tag + ">");
+          stack.push({ tag: tag, indent: indent, liOpen: false });
+          top = stack[stack.length - 1];
+        } else if (top.liOpen) {
+          out.push("</li>");
+        }
+
+        out.push("<li>" + formatInline(item[2]));
+        top.liOpen = true;
+        pendingBlank = false;
         continue;
       }
 
-      if (/^#\s+/.test(line)) {
-        if (inList) {
-          out.push("</ul>");
-          inList = false;
-        }
-        out.push("<h1>" + formatInline(line.replace(/^#\s+/, "")) + "</h1>");
+      // Plain text. An indented line directly under a list item continues it.
+      if (stack.length && !pendingBlank) {
+        out.push(" " + formatInline(line));
         continue;
       }
 
-      if (/^[-*]\s+/.test(line)) {
-        if (!inList) {
-          out.push("<ul>");
-          inList = true;
-        }
-        out.push("<li>" + formatInline(line.replace(/^[-*]\s+/, "")) + "</li>");
-        continue;
-      }
-
-      if (inList) {
-        out.push("</ul>");
-        inList = false;
-      }
+      closeAll();
       out.push("<p>" + formatInline(line) + "</p>");
+      pendingBlank = false;
     }
 
-    if (inList) {
-      out.push("</ul>");
-    }
-
+    closeAll();
     return out.join("");
   }
 
@@ -282,12 +296,18 @@
     var status = panel.querySelector("#mqw-status");
 
     function resizeInput() {
+      // A hidden panel measures as 0px tall, so wait until it is shown;
+      // openPanel() calls this again once it is.
+      if (panel.getAttribute("data-open") !== "true") {
+        return;
+      }
       input.style.height = "1px";
       input.style.height = Math.min(input.scrollHeight, 120) + "px";
     }
 
     function openPanel() {
       panel.setAttribute("data-open", "true");
+      resizeInput();
       input.focus();
     }
 

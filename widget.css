@@ -9,6 +9,19 @@
   --mqw-font: "Source Sans Pro", Arial, Helvetica, sans-serif;
 }
 
+/* The host page's stylesheet can leak letter/word spacing into the widget
+   (seen on medquest.hawaii.gov), so pin it for everything inside the panel. */
+#mqw-panel,
+#mqw-panel *,
+#mqw-panel *::placeholder,
+#mqw-panel *::before,
+#mqw-panel *::after {
+  letter-spacing: normal !important;
+  word-spacing: normal !important;
+  text-indent: 0 !important;
+  text-transform: none !important;
+}
+
 #mqw-launcher {
   position: fixed;
   right: 18px;
@@ -123,11 +136,14 @@
 .mqw-msg {
   font-family: var(--mqw-font);
   font-size: 14px;
-  line-height: 1.45;
+  font-weight: 400;
+  line-height: 1.5;
+  text-align: left;
   border-radius: 14px;
-  padding: 9px 12px;
+  padding: 10px 14px;
   max-width: 88%;
-  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  white-space: normal;
 }
 
 .mqw-msg.user {
@@ -135,6 +151,7 @@
   background: var(--mqw-primary);
   color: #fff;
   border-bottom-right-radius: 4px;
+  white-space: pre-wrap;
 }
 
 .mqw-msg.assistant {
@@ -152,22 +169,67 @@
   border-bottom-left-radius: 4px;
 }
 
+/* Reset host-page typography so replies look the same on any site. */
+.mqw-msg p,
+.mqw-msg ul,
+.mqw-msg ol,
+.mqw-msg li,
+.mqw-msg h1,
+.mqw-msg h2,
+.mqw-msg h3,
+.mqw-msg h4,
+.mqw-msg strong,
+.mqw-msg em {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+}
+
 .mqw-msg h1,
 .mqw-msg h2,
 .mqw-msg h3,
 .mqw-msg h4 {
-  margin: 0 0 4px;
-  font-size: 1em;
+  margin: 0 0 6px;
   font-weight: 700;
-  line-height: inherit;
 }
 
 .mqw-msg p {
-  margin: 0.3rem 0;
+  margin: 0 0 8px;
+  padding: 0;
+}
+
+.mqw-msg ul,
+.mqw-msg ol {
+  margin: 0 0 8px;
+  padding: 0 0 0 24px;
 }
 
 .mqw-msg ul {
-  margin: 0.4rem 0 0.2rem 1.2rem;
+  list-style: disc;
+}
+
+.mqw-msg ol {
+  list-style: decimal;
+}
+
+.mqw-msg li > ul,
+.mqw-msg li > ol {
+  margin: 4px 0 0;
+}
+
+.mqw-msg li {
+  margin: 0 0 4px;
+  padding: 0;
+}
+
+.mqw-msg strong {
+  font-weight: 700;
+}
+
+.mqw-msg > :last-child,
+.mqw-msg li:last-child {
+  margin-bottom: 0;
 }
 
 .mqw-typing {
@@ -214,6 +276,8 @@
 .mqw-sources strong {
   display: block;
   margin-bottom: 3px;
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .mqw-feedback {
@@ -302,6 +366,8 @@
 
 .mqw-form textarea {
   width: 100%;
+  box-sizing: border-box;
+  min-height: 40px;
   max-height: 120px;
   resize: none;
   overflow-y: auto;
