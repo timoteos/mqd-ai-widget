@@ -2,6 +2,38 @@
 
 Newest first. Timestamps pulled from git history.
 
+## 2026-11-10 14:10 — Backend outage, guardrail blocks, eligibility answers
+
+**Outage (fixed in AWS, not in code):** every question failed with a 500
+error. The knowledge base's IAM role, shared with the internal ikebot, had
+been changed to allow only ikebot's vector index (`mqd-internal-vectors`).
+The role now lists both indexes. Giving each bot its own role would stop
+this happening again.
+
+**Lambda (`lambda_function.py`):**
+- Guardrail blocks show a friendly message with the phone number instead of
+  "Sorry, this question could not be answered.", and guardrail tracing is on
+  (search the logs for `GUARDRAIL INTERVENED`).
+- The SSN filter no longer hides the ZIP+4 in Med-QUEST's address, and
+  hawaii.gov emails show in answers.
+- Prompt cleanup: no "I appreciate the test", no mentions of "the documents",
+  neutral wording about income.
+- The bot no longer states income limits or says whether someone is likely
+  to qualify. It kept quoting the wrong row of the income chart (the
+  2-person limit for a household of 3), which tells families who qualify
+  that they don't. A version that searched harder for the chart made the
+  figures inconsistent and was rolled back.
+
+**Widget:** markdown lists render properly (no more "double spacing"), the
+host page's letter-spacing no longer leaks in, and the input box opens at
+its full height.
+
+**Left for later:** the guardrail still blocks about 4 in 10 conversations
+that include personal details (users see the friendly message); follow-up
+questions often fail; sources are never returned; Ilocano replies are
+garbled; official income limits should be built into the code and checked
+by Med-QUEST staff.
+
 ## 2026-09-23 11:17 — Landing page replica for showcasing the widget
 
 Added `website/index.html`, a snapshot of medquest.hawaii.gov's actual landing
