@@ -2,6 +2,52 @@
 
 Newest first. Timestamps pulled from git history.
 
+## 2026-11-19 — v2 chatbot: new knowledge base, answering logic and test suite
+
+A rebuild of the website bot, deployed as a separate Lambda (`medquest-kb-chat-v2`)
+for testing. The live bot (`medquest-kb-chat`) and the widget's API are unchanged.
+
+**Why:** graded on the same questions, the live bot answered 37% correctly. Its
+website knowledge base had loaded 8 of 209 pages (in April, before the site was
+rebuilt); most answers came from older hand-collected documents.
+
+**Knowledge base** (`loader/`, `knowledge-base/`, Bedrock KB `mqd-chatbot-kb-v2`):
+- Built from the site's own content API: 62 member and public pages split by section,
+  a card for each current DHS form (63), drafted answers for common questions (26),
+  and a contact list copied from the site (`knowledge-base/facts.json`).
+- Old copies of forms linked from pages are swapped for the current one; repeated
+  sections are dropped; every file carries a label (type, audience, topics, link).
+- `node loader/fetch.mjs` then `python3 loader/build.py` rebuilds it.
+- `knowledge-base/forms-review.xlsx`: best guess at the current version of each form,
+  for staff to confirm.
+
+**Answering** (`lambda/v2/`):
+- Rewrites follow-ups into full questions before searching; vector and keyword search
+  together; answers give the online portal, form or page first and the phone number
+  only when a person is needed; links and phone numbers are checked against the site.
+- Buttons under answers (download a form, open a page, call a crisis line).
+- Eligibility estimate calculated in code: uses details already given, handles
+  disability and after-tax income, and a new question part-way through is answered.
+- Crisis messages get fixed replies (911, 988, Hawaiʻi CARES, DV hotline, Poison
+  Control) before anything else runs.
+- Own guardrail, published as a fixed version; names, phone numbers and addresses in
+  questions are masked. Chats stored redacted for 24 hours; logs kept 30 days.
+- Model: Claude Haiku 5.5 (low effort), chosen by comparison in `eval/reports/`.
+
+**Widget:** Markdown links and tables render; buttons under answers; secure session ids.
+`npm run start:v2` runs the site locally against the v2 Lambda.
+
+**Tests** (`eval/`): 90 questions plus a 17-question held-out set, graded by a separate
+model against the whole site. Results in `eval/reports/`: v2 98% (held-out 91%) vs the
+live bot 37% (32%).
+
+**AWS:** resource definitions in `aws/` (account number as a placeholder). Everything
+is tagged `Project=mqd-chatbot`, `Owner=mqd-chatbot`.
+
+**Not done:** public endpoint with rate limits and alarms; staff review of drafted
+answers, form versions, contacts and crisis wording; privacy notice and AI label;
+accessibility and language review; scheduled content refresh.
+
 ## 2026-11-10 15:03 — Eligibility estimate, worked out in code (temporary figures)
 
 Added for the demo. The live Lambda already runs this version.
