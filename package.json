@@ -4,7 +4,8 @@
   "private": true,
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "start:v2": "AWS_CONFIG_FILE=$PWD/.aws/config AWS_SHARED_CREDENTIALS_FILE=$PWD/.aws/credentials AWS_LOGIN_CACHE_DIRECTORY=$PWD/.aws/login-cache AWS_PROFILE=mqd-chatbot AWS_REGION=us-east-2 CHAT_LAMBDA=medquest-kb-chat-v2 PORT=${PORT:-3200} node server.js"
   },
   "dependencies": {
     "dotenv": "^16.4.5",

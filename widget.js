@@ -11,12 +11,16 @@
   var sessionId = generateId();
   var GREETING = "### Aloha\nI can help answer Med-QUEST questions. Ask me anything about coverage, forms, or services.";
 
+  // Secure random ids: Math.random is predictable.
   function generateId() {
-    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
-      var r = (Math.random() * 16) | 0,
-        v = c === "x" ? r : (r & 0x3) | 0x8;
-      return v.toString(16);
-    });
+    if (window.crypto && typeof window.crypto.randomUUID === "function") {
+      return window.crypto.randomUUID();
+    }
+    var bytes = window.crypto.getRandomValues(new Uint8Array(16));
+    bytes[6] = (bytes[6] & 0x0f) | 0x40;
+    bytes[8] = (bytes[8] & 0x3f) | 0x80;
+    var hex = Array.prototype.map.call(bytes, function (b) { return (b + 0x100).toString(16).slice(1); }).join("");
+    return hex.slice(0, 8) + "-" + hex.slice(8, 12) + "-" + hex.slice(12, 16) + "-" + hex.slice(16, 20) + "-" + hex.slice(20);
   }
 
   function getSession() {
@@ -40,8 +44,18 @@
       .replace(/>/g, "&gt;");
   }
 
+  // Input is already escaped; only http(s) URLs without quotes become links.
+  var MD_LINK = /\[([^\]]+)\]\((https?:\/\/[^\s)"'<>]+)\)/g;
+  var BARE_URL = /(^|[\s(])(https?:\/\/[^\s)"'<>]+[^\s)"'<>.,;:!?])/g;
+
+  function link(url, label) {
+    return '<a href="' + url + '" target="_blank" rel="noopener noreferrer">' + label + "</a>";
+  }
+
   function formatInline(md) {
     return md
+      .replace(MD_LINK, function (_m, label, url) { return link(url, label); })
+      .replace(BARE_URL, function (_m, before, url) { return before + link(url, url); })
       .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
       .replace(/\*(.+?)\*/g, "<em>$1</em>");
   }
@@ -71,6 +85,25 @@
 
       if (!line) {
         pendingBlank = true;
+        continue;
+      }
+
+      // Markdown table: header row, |---| row, body rows.
+      if (/^\|.*\|$/.test(line) && /^\|[\s:|-]+\|$/.test((lines[i + 1] || "").trim())) {
+        closeAll();
+        var cells = function (row) {
+          return row.trim().replace(/^\||\|$/g, "").split("|").map(function (c) { return formatInline(c.trim()); });
+        };
+        var head = cells(line);
+        var html = '<div class="mqw-table"><table><thead><tr><th scope="col">' + head.join('</th><th scope="col">') + "</th></tr></thead><tbody>";
+        i += 2;
+        while (i < lines.length && /^\|.*\|$/.test(lines[i].trim())) {
+          html += "<tr><td>" + cells(lines[i]).join("</td><td>") + "</td></tr>";
+          i += 1;
+        }
+        i -= 1;
+        out.push(html + "</tbody></table></div>");
+        pendingBlank = false;
         continue;
       }
 
@@ -138,7 +171,32 @@
       el.textContent = text;
     }
 
-    if (Array.isArray(sources) && sources.length > 0) {
+    var actions = Array.isArray(opts.actions) ? opts.actions.filter(function (a) {
+      return a && typeof a.label === "string" && /^(https?:\/\/|tel:[0-9+]+$)/.test(a.url || "");
+    }) : [];
+
+    if (actions.length > 0) {
+      // Links open in a new tab so the conversation stays open.
+      var actionWrap = document.createElement("div");
+      actionWrap.className = "mqw-actions";
+      for (var a = 0; a < actions.length; a += 1) {
+        var btn = document.createElement("a");
+        var isPdf = /\.pdf($|[?#])/i.test(actions[a].url);
+        btn.className = "mqw-action" + (actions[a].kind === "download" ? " mqw-action-download" : "");
+        btn.href = actions[a].url;
+        btn.textContent = actions[a].label + (isPdf ? " (PDF)" : "");
+        if (/^tel:/.test(actions[a].url)) {
+          // tel: link, starts a call on phones.
+          btn.className += " mqw-action-call";
+        } else {
+          btn.target = "_blank";
+          btn.rel = "noopener noreferrer";
+          btn.setAttribute("aria-label", btn.textContent + ", opens in a new tab");
+        }
+        actionWrap.appendChild(btn);
+      }
+      el.appendChild(actionWrap);
+    } else if (Array.isArray(sources) && sources.length > 0) {
       var sourceWrap = document.createElement("div");
       sourceWrap.className = "mqw-sources";
 
@@ -377,11 +435,14 @@
         }
 
         if (!response.ok) {
-          throw new Error(data.answer || "API request failed.");
+          throw new Error(data.answer || data.error || "API request failed.");
         }
 
         typingEl.remove();
-        addMessage(log, "assistant", data.answer || "No answer returned.", data.sources || [], { feedback: true });
+        addMessage(log, "assistant", data.answer || "No answer returned.", data.sources || [], {
+          feedback: true,
+          actions: data.actions
+        });
         status.textContent = "";
       } catch (err) {
         typingEl.remove();

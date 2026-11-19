@@ -8,6 +8,8 @@ dotenv.config({ path: path.join(__dirname, ".env") });
 const app = express();
 const port = Number(process.env.PORT || 3000);
 const chatApiUrl = process.env.CHAT_API_URL;
+// Local testing only: calls the Lambda through the AWS CLI. Never set on Render.
+const chatLambda = process.env.CHAT_LAMBDA;
 const requestTimeoutMs = Number(process.env.REQUEST_TIMEOUT_MS || 90000);
 
 app.use(express.json({
@@ -72,6 +74,10 @@ app.use(express.static(path.join(__dirname), { index: false }));
 
 app.post("/widget-api/chat", async (req, res) => {
   try {
+    if (chatLambda) {
+      return res.json(await askLambda(req.body));
+    }
+
     if (!chatApiUrl) {
       return res.status(500).json({
         answer: "Chat API is not configured on the backend. Set CHAT_API_URL in .env.",
@@ -135,6 +141,7 @@ app.post("/widget-api/chat", async (req, res) => {
       ? data.answer
       : "API response format is invalid. Expected an 'answer' string.";
     const sources = Array.isArray(data?.sources) ? data.sources : [];
+    const actions = cleanActions(data?.actions);
 
     if (!upstream.ok) {
       return res.status(upstream.status).json({
@@ -143,7 +150,7 @@ app.post("/widget-api/chat", async (req, res) => {
       });
     }
 
-    return res.json({ answer, sources });
+    return res.json({ answer, sources, actions });
   } catch {
     return res.status(500).json({
       answer: "Unexpected server error while processing chat request.",
@@ -151,6 +158,31 @@ app.post("/widget-api/chat", async (req, res) => {
     });
   }
 });
+
+// Pass on only well-formed buttons.
+function cleanActions(actions) {
+  if (!Array.isArray(actions)) return [];
+  return actions
+    .filter((a) => a && typeof a.label === "string" && /^(https?:\/\/|tel:[0-9+]+$)/.test(a.url || ""))
+    .slice(0, 3)
+    .map((a) => ({ label: a.label.slice(0, 80), url: a.url, kind: ["download", "call"].includes(a.kind) ? a.kind : "page" }));
+}
+
+function askLambda(body) {
+  const { execFile } = require("child_process");
+  const os = require("os");
+  const out = path.join(fs.mkdtempSync(path.join(os.tmpdir(), "chat-")), "out.json");
+  const payload = JSON.stringify({ body: JSON.stringify(body) });
+  return new Promise((resolve) => {
+    execFile("aws", ["lambda", "invoke", "--function-name", chatLambda, "--cli-binary-format", "raw-in-base64-out",
+      "--payload", payload, out], { timeout: requestTimeoutMs }, (error) => {
+      if (error) return resolve({ answer: "The local Lambda call failed: check the AWS sign-in.", sources: [], actions: [] });
+      const result = JSON.parse(fs.readFileSync(out, "utf8"));
+      const data = JSON.parse(result.body || "{}");
+      resolve({ answer: data.answer || data.error || "", sources: data.sources || [], actions: cleanActions(data.actions) });
+    });
+  });
+}
 
 app.listen(port, () => {
   console.log(`MQD AI Widget server running at http://localhost:${port}`);
