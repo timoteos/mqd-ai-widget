@@ -336,7 +336,7 @@ def search(query):
 
 
 # --- Step 3: answer ---
-ANSWER_PROMPT = """You are Aloha, the assistant on the Med-QUEST website (Hawaii's Medicaid program). Your job is to
+ANSWER_PROMPT = """You are Kōkua, the virtual assistant on the Med-QUEST website (Hawaii's Medicaid program). Your job is to
 help people do things themselves, so they don't need to call. Answer from the numbered sources only.
 
 How to answer:
@@ -354,11 +354,10 @@ How to answer:
 5. If the sources don't answer the question, say so in one sentence, point to the most relevant page from the
    sources, and only then give the phone number. Never use general knowledge or guess.
 6. Sources marked "answer" were written and checked for this purpose; prefer them when they fit.
-7. Personal details: text like {NAME}, {PHONE} or {ADDRESS} is a detail the person shared that was hidden for
-   their privacy. Never write these placeholders and don't address the person by name. If they introduce
-   themselves, greet them warmly ("Nice to meet you!") and offer to help. Only if they ask you to remember or
-   repeat their name or other details, say kindly that for their privacy this chat doesn't keep them. Say this
-   at most once in a conversation; if you already said it, just help. Never offer to use or remember a name.
+7. Personal details: text like {PHONE} or {ADDRESS} is a detail the person shared that was hidden for their
+   privacy. Never write these placeholders. If the person tells you their first name, you may use it, sparingly;
+   never ask for it. If they ask whether you keep their phone number, address or other details, say kindly that
+   those are hidden for their privacy.
 8. Income: never state a dollar income limit or say whether someone qualifies. You may repeat percentages of
    the Federal Poverty Level exactly as a source gives them. Never ask for someone's household, income or age
    yourself: if they want to know whether they qualify, say they can ask "Do I qualify?" for a quick estimate,
@@ -386,7 +385,7 @@ def write_answer(question, history, results, language):
     used_line = re.search(r"\n?\s*USED:\s*([^\n]*)\s*$", text)
     answer = text[:used_line.start()].strip() if used_line else text.strip()
     # A masked detail must never reach the person ("Hi {NAME}").
-    answer = re.sub(r"[ \t]*\{(NAME|PHONE|EMAIL|ADDRESS|[A-Z_]{3,40})\}", "", answer)
+    answer = re.sub(r"[ \t]*\{(NAME|PHONE|EMAIL|ADDRESS|[A-Z_]{3,40})\}", "", answer)  # never show a masked detail
     answer = re.sub(r"\b(Hi|Hello|Aloha|Thanks|Thank you)\s*,", r"\1,", answer)
     if SOURCE_TALK.search(answer):
         print(f"answer mentions its sources: {answer[:200]!r}")

@@ -1,6 +1,6 @@
 {
   "name": "mqd-chatbot-v2-guardrail",
-  "description": "Med-QUEST website chatbot v2: blocks attacks and offensive content, masks personal details in questions, checks answers are grounded.",
+  "description": "Med-QUEST website chatbot v2: blocks attacks and offensive content, masks personal details (not first names) in questions, checks grounding.",
   "contentPolicyConfig": {
     "filtersConfig": [
       {
@@ -47,13 +47,6 @@
   },
   "sensitiveInformationPolicyConfig": {
     "piiEntitiesConfig": [
-      {
-        "type": "NAME",
-        "action": "ANONYMIZE",
-        "inputEnabled": true,
-        "inputAction": "ANONYMIZE",
-        "outputEnabled": false
-      },
       {
         "type": "PHONE",
         "action": "ANONYMIZE",
@@ -147,6 +140,9 @@
       "key": "Project",
       "value": "mqd-chatbot"
     },
-    {"key": "Owner", "value": "mqd-chatbot"}
+    {
+      "key": "Owner",
+      "value": "mqd-chatbot"
+    }
   ]
 }

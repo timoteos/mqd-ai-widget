@@ -30,8 +30,10 @@ rebuilt); most answers came from older hand-collected documents.
   disability and after-tax income, and a new question part-way through is answered.
 - Crisis messages get fixed replies (911, 988, Hawaiʻi CARES, DV hotline, Poison
   Control) before anything else runs.
-- Own guardrail, published as a fixed version; names, phone numbers and addresses in
-  questions are masked. Chats stored redacted for 24 hours; logs kept 30 days.
+- Own guardrail, published as a fixed version; phone numbers, addresses and ID numbers in
+  questions are masked (first names are kept for the conversation). Chats stored redacted
+  for 24 hours; logs kept 30 days.
+- Named Kōkua ("help"), alongside the internal ʻIke bot.
 - Model: Claude Haiku 5.5 (low effort), chosen by comparison in `eval/reports/`.
 
 **Widget:** Markdown links and tables render; buttons under answers; secure session ids.

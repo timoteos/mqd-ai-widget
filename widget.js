@@ -9,7 +9,7 @@
   var position = config.position === "right" ? "right" : "left";
   var userId = generateId();
   var sessionId = generateId();
-  var GREETING = "### Aloha\nI can help answer Med-QUEST questions. Ask me anything about coverage, forms, or services.";
+  var GREETING = "### Aloha!\nI'm Kōkua, Med-QUEST's virtual assistant. Ask me about applying, renewing, coverage, forms or offices.";
 
   // Secure random ids: Math.random is predictable.
   function generateId() {
@@ -310,7 +310,7 @@
     var launcher = document.createElement("button");
     launcher.id = "mqw-launcher";
     launcher.type = "button";
-    launcher.setAttribute("aria-label", "Open chat assistant");
+    launcher.setAttribute("aria-label", "Open Kōkua, the Med-QUEST chat assistant");
     launcher.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="28px" height="28px"><path d="M21 11.5C21 16.7467 16.7467 21 11.5 21C10.9893 21 10.4842 20.963 9.98699 20.8901L5.21052 22.9474C4.77842 23.1334 4.29915 22.8585 4.21052 22.4105C4.15236 22.1133 4.21052 21.8162 4.38421 21.5921L6.10253 19.5526C3.63684 17.5961 2 14.7105 2 11.5C2 6.25329 6.25329 2 11.5 2C16.7467 2 21 6.25329 21 11.5ZM8.5 10.5C7.67157 10.5 7 11.1716 7 12C7 12.8284 7.67157 13.5 8.5 13.5C9.32843 13.5 10 12.8284 10 12C10 11.1716 9.32843 10.5 8.5 10.5ZM14.5 10.5C13.6716 10.5 13 11.1716 13 12C13 12.8284 13.6716 13.5 14.5 13.5C15.3284 13.5 16 12.8284 16 12C16 11.1716 15.3284 10.5 14.5 10.5Z"/></svg>';
 
     var panel = document.createElement("section");
@@ -326,7 +326,7 @@
 
     panel.innerHTML = ""
       + '<div class="mqw-header">'
-      + "<h3>Med-QUEST Assistant</h3>"
+      + "<h3>Kōkua · Med-QUEST Assistant</h3>"
       + '<div class="mqw-header-actions">'
       + '<a class="mqw-icon-btn mqw-preassess" href="https://dksph266ybqbw.cloudfront.net" target="_blank" rel="noopener noreferrer" aria-label="Pre-assessment" title="Pre-assessment">'
       + '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>'

@@ -1444,16 +1444,16 @@
     ]
    ],
    "must_not": [
-    "Leilani",
-    "Kahale",
     "555-1234",
-    "Kapiolani"
+    "Kapiolani",
+    "{PHONE}",
+    "{ADDRESS}"
    ],
    "links": [
     "medical.mybenefits.hawaii.gov",
     "medicaid-renewal-info"
    ],
-   "reference": "Answers the renewal question without repeating any personal detail.",
+   "reference": "Answers the renewal question; may use the first name, but never repeats the phone number or street address.",
    "source": ""
   },
   {
@@ -1990,19 +1990,15 @@
    ],
    "must": [
     [
-     "privacy",
-     "personal details",
-     "don't keep",
-     "do not keep"
+     "Leilani"
     ]
    ],
    "must_not": [
     "{NAME}",
-    "Leilani",
     "I can only help with questions"
    ],
    "links": [],
-   "reference": "Doesn't keep or repeat names, for privacy: says so kindly and offers help. Never shows a {NAME} placeholder.",
+   "reference": "Remembers the first name given earlier in the chat (Leilani). Never shows a {NAME} placeholder.",
    "source": ""
   }
  ]

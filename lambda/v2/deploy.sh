@@ -13,7 +13,7 @@ ROLE=arn:aws:iam::$ACCOUNT_ID:role/mqd-chatbot-v2-lambda-role
 P=arn:aws:bedrock:us-east-2:$ACCOUNT_ID:inference-profile/global.anthropic
 # Default model: scored best for its cost in eval/compare.sh.
 DEFAULT_MODEL=$P.claude-haiku-5-5
-ENV="Variables={KNOWLEDGE_BASE_ID=HDEFCGHQPX,MODEL_ID=$DEFAULT_MODEL,UNDERSTAND_MODEL_ID=${UNDERSTAND_MODEL:-$DEFAULT_MODEL},ANSWER_MODEL_ID=${ANSWER_MODEL:-$DEFAULT_MODEL},EFFORT=${EFFORT-low},GUARDRAIL_ID=mzfny1wmoqqi,GUARDRAIL_VERSION=2,SESSIONS_TABLE=mqd-chatbot-v2-sessions,MESSAGES_TABLE=mqd-chatbot-v2-messages}"
+ENV="Variables={KNOWLEDGE_BASE_ID=HDEFCGHQPX,MODEL_ID=$DEFAULT_MODEL,UNDERSTAND_MODEL_ID=${UNDERSTAND_MODEL:-$DEFAULT_MODEL},ANSWER_MODEL_ID=${ANSWER_MODEL:-$DEFAULT_MODEL},EFFORT=${EFFORT-low},GUARDRAIL_ID=mzfny1wmoqqi,GUARDRAIL_VERSION=3,SESSIONS_TABLE=mqd-chatbot-v2-sessions,MESSAGES_TABLE=mqd-chatbot-v2-messages}"
 
 ZIP=$(mktemp -d)/v2.zip
 zip -jq "$ZIP" lambda/v2/lambda_function.py lambda/v2/estimate.py lambda/v2/crisis.py lambda/v2/bm25.py knowledge-base/build/resources.json knowledge-base/build/search-docs.json knowledge-base/build/answers.json knowledge-base/facts.json
