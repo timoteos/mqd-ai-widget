@@ -1,0 +1,60 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "OwnLogs",
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ],
+      "Resource": [
+        "arn:aws:logs:us-east-2:${ACCOUNT_ID}:log-group:/aws/lambda/medquest-kb-chat-v2",
+        "arn:aws:logs:us-east-2:${ACCOUNT_ID}:log-group:/aws/lambda/medquest-kb-chat-v2:*"
+      ]
+    },
+    {
+      "Sid": "SearchNewKnowledgeBaseOnly",
+      "Effect": "Allow",
+      "Action": "bedrock:Retrieve",
+      "Resource": "arn:aws:bedrock:us-east-2:${ACCOUNT_ID}:knowledge-base/HDEFCGHQPX"
+    },
+    {
+      "Sid": "ClaudeModelsUnderTest",
+      "Effect": "Allow",
+      "Action": "bedrock:InvokeModel",
+      "Resource": [
+        "arn:aws:bedrock:us-east-2:${ACCOUNT_ID}:inference-profile/global.anthropic.claude-haiku-4-5-20251001-v1:0",
+        "arn:aws:bedrock:*::foundation-model/anthropic.claude-haiku-4-5-20251001-v1:0",
+        "arn:aws:bedrock:::foundation-model/anthropic.claude-haiku-4-5-20251001-v1:0",
+        "arn:aws:bedrock:us-east-2:${ACCOUNT_ID}:inference-profile/global.anthropic.claude-haiku-5-5",
+        "arn:aws:bedrock:*::foundation-model/anthropic.claude-haiku-5-5",
+        "arn:aws:bedrock:::foundation-model/anthropic.claude-haiku-5-5",
+        "arn:aws:bedrock:us-east-2:${ACCOUNT_ID}:inference-profile/global.anthropic.claude-sonnet-5-5",
+        "arn:aws:bedrock:*::foundation-model/anthropic.claude-sonnet-5-5",
+        "arn:aws:bedrock:::foundation-model/anthropic.claude-sonnet-5-5"
+      ]
+    },
+    {
+      "Sid": "UseOwnGuardrail",
+      "Effect": "Allow",
+      "Action": "bedrock:ApplyGuardrail",
+      "Resource": "arn:aws:bedrock:us-east-2:${ACCOUNT_ID}:guardrail/mzfny1wmoqqi"
+    },
+    {
+      "Sid": "OwnSessionTables",
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:GetItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:Query"
+      ],
+      "Resource": [
+        "arn:aws:dynamodb:us-east-2:${ACCOUNT_ID}:table/mqd-chatbot-v2-sessions",
+        "arn:aws:dynamodb:us-east-2:${ACCOUNT_ID}:table/mqd-chatbot-v2-messages"
+      ]
+    }
+  ]
+}

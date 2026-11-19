@@ -1,0 +1,11 @@
+{
+  "knowledgeBaseId": "HDEFCGHQPX",
+  "name": "mqd-chatbot-kb-files",
+  "description": "kb/ prefix of mqd-chatbot-kb-${ACCOUNT_ID}, written by loader/build.py. Already split by section, so no chunking.",
+  "dataSourceConfiguration": {
+    "type": "S3",
+    "s3Configuration": { "bucketArn": "arn:aws:s3:::mqd-chatbot-kb-${ACCOUNT_ID}", "inclusionPrefixes": ["kb/"] }
+  },
+  "vectorIngestionConfiguration": { "chunkingConfiguration": { "chunkingStrategy": "NONE" } },
+  "dataDeletionPolicy": "DELETE"
+}

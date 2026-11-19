@@ -1,0 +1,31 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "EmbedWithTitanV2",
+      "Effect": "Allow",
+      "Action": "bedrock:InvokeModel",
+      "Resource": "arn:aws:bedrock:us-east-2::foundation-model/amazon.titan-embed-text-v2:0"
+    },
+    {
+      "Sid": "ReadKnowledgeBaseFiles",
+      "Effect": "Allow",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::mqd-chatbot-kb-${ACCOUNT_ID}/kb/*",
+      "Condition": { "StringEquals": { "aws:ResourceAccount": "${ACCOUNT_ID}" } }
+    },
+    {
+      "Sid": "ListKnowledgeBaseFiles",
+      "Effect": "Allow",
+      "Action": "s3:ListBucket",
+      "Resource": "arn:aws:s3:::mqd-chatbot-kb-${ACCOUNT_ID}",
+      "Condition": { "StringEquals": { "aws:ResourceAccount": "${ACCOUNT_ID}" } }
+    },
+    {
+      "Sid": "UseOwnVectorIndex",
+      "Effect": "Allow",
+      "Action": ["s3vectors:GetIndex", "s3vectors:QueryVectors", "s3vectors:PutVectors", "s3vectors:GetVectors", "s3vectors:DeleteVectors"],
+      "Resource": "arn:aws:s3vectors:us-east-2:${ACCOUNT_ID}:bucket/mqd-chatbot-vectors/index/mqd-chatbot-v2"
+    }
+  ]
+}

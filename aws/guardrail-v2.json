@@ -1,0 +1,152 @@
+{
+  "name": "mqd-chatbot-v2-guardrail",
+  "description": "Med-QUEST website chatbot v2: blocks attacks and offensive content, masks personal details in questions, checks answers are grounded.",
+  "contentPolicyConfig": {
+    "filtersConfig": [
+      {
+        "type": "HATE",
+        "inputStrength": "MEDIUM",
+        "outputStrength": "MEDIUM"
+      },
+      {
+        "type": "INSULTS",
+        "inputStrength": "MEDIUM",
+        "outputStrength": "MEDIUM"
+      },
+      {
+        "type": "SEXUAL",
+        "inputStrength": "MEDIUM",
+        "outputStrength": "MEDIUM"
+      },
+      {
+        "type": "VIOLENCE",
+        "inputStrength": "MEDIUM",
+        "outputStrength": "MEDIUM"
+      },
+      {
+        "type": "MISCONDUCT",
+        "inputStrength": "MEDIUM",
+        "outputStrength": "MEDIUM"
+      },
+      {
+        "type": "PROMPT_ATTACK",
+        "inputStrength": "HIGH",
+        "outputStrength": "NONE"
+      }
+    ]
+  },
+  "wordPolicyConfig": {
+    "managedWordListsConfig": [
+      {
+        "type": "PROFANITY",
+        "inputEnabled": false,
+        "outputEnabled": true,
+        "outputAction": "BLOCK"
+      }
+    ]
+  },
+  "sensitiveInformationPolicyConfig": {
+    "piiEntitiesConfig": [
+      {
+        "type": "NAME",
+        "action": "ANONYMIZE",
+        "inputEnabled": true,
+        "inputAction": "ANONYMIZE",
+        "outputEnabled": false
+      },
+      {
+        "type": "PHONE",
+        "action": "ANONYMIZE",
+        "inputEnabled": true,
+        "inputAction": "ANONYMIZE",
+        "outputEnabled": false
+      },
+      {
+        "type": "EMAIL",
+        "action": "ANONYMIZE",
+        "inputEnabled": true,
+        "inputAction": "ANONYMIZE",
+        "outputEnabled": false
+      },
+      {
+        "type": "ADDRESS",
+        "action": "ANONYMIZE",
+        "inputEnabled": true,
+        "inputAction": "ANONYMIZE",
+        "outputEnabled": false
+      },
+      {
+        "type": "US_SOCIAL_SECURITY_NUMBER",
+        "action": "ANONYMIZE",
+        "inputEnabled": true,
+        "inputAction": "ANONYMIZE",
+        "outputEnabled": true,
+        "outputAction": "ANONYMIZE"
+      },
+      {
+        "type": "CREDIT_DEBIT_CARD_NUMBER",
+        "action": "ANONYMIZE",
+        "inputEnabled": true,
+        "inputAction": "ANONYMIZE",
+        "outputEnabled": true,
+        "outputAction": "ANONYMIZE"
+      },
+      {
+        "type": "US_BANK_ACCOUNT_NUMBER",
+        "action": "ANONYMIZE",
+        "inputEnabled": true,
+        "inputAction": "ANONYMIZE",
+        "outputEnabled": false
+      },
+      {
+        "type": "DRIVER_ID",
+        "action": "ANONYMIZE",
+        "inputEnabled": true,
+        "inputAction": "ANONYMIZE",
+        "outputEnabled": false
+      },
+      {
+        "type": "US_PASSPORT_NUMBER",
+        "action": "ANONYMIZE",
+        "inputEnabled": true,
+        "inputAction": "ANONYMIZE",
+        "outputEnabled": false
+      },
+      {
+        "type": "US_INDIVIDUAL_TAX_IDENTIFICATION_NUMBER",
+        "action": "ANONYMIZE",
+        "inputEnabled": true,
+        "inputAction": "ANONYMIZE",
+        "outputEnabled": false
+      },
+      {
+        "type": "PASSWORD",
+        "action": "ANONYMIZE",
+        "inputEnabled": true,
+        "inputAction": "ANONYMIZE",
+        "outputEnabled": false
+      }
+    ]
+  },
+  "contextualGroundingPolicyConfig": {
+    "filtersConfig": [
+      {
+        "type": "GROUNDING",
+        "threshold": 0.15
+      },
+      {
+        "type": "RELEVANCE",
+        "threshold": 0.15
+      }
+    ]
+  },
+  "blockedInputMessaging": "Sorry, I can't help with that.",
+  "blockedOutputsMessaging": "Sorry, I can't answer that one.",
+  "tags": [
+    {
+      "key": "Project",
+      "value": "mqd-chatbot"
+    },
+    {"key": "Owner", "value": "mqd-chatbot"}
+  ]
+}

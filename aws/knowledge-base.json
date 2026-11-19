@@ -1,0 +1,17 @@
+{
+  "name": "mqd-chatbot-kb-v2",
+  "description": "Med-QUEST website chatbot, v2: site pages by section, form cards and approved answers, built by loader/build.py.",
+  "roleArn": "arn:aws:iam::${ACCOUNT_ID}:role/mqd-chatbot-kb-role",
+  "knowledgeBaseConfiguration": {
+    "type": "VECTOR",
+    "vectorKnowledgeBaseConfiguration": {
+      "embeddingModelArn": "arn:aws:bedrock:us-east-2::foundation-model/amazon.titan-embed-text-v2:0",
+      "embeddingModelConfiguration": { "bedrockEmbeddingModelConfiguration": { "dimensions": 1024, "embeddingDataType": "FLOAT32" } }
+    }
+  },
+  "storageConfiguration": {
+    "type": "S3_VECTORS",
+    "s3VectorsConfiguration": { "indexArn": "arn:aws:s3vectors:us-east-2:${ACCOUNT_ID}:bucket/mqd-chatbot-vectors/index/mqd-chatbot-v2" }
+  },
+  "tags": { "Project": "mqd-chatbot", "Owner": "mqd-chatbot" }
+}

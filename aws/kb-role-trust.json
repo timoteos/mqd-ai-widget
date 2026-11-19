@@ -1,0 +1,13 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [{
+    "Sid": "BedrockKnowledgeBaseOnly",
+    "Effect": "Allow",
+    "Principal": { "Service": "bedrock.amazonaws.com" },
+    "Action": "sts:AssumeRole",
+    "Condition": {
+      "StringEquals": { "aws:SourceAccount": "${ACCOUNT_ID}" },
+      "ArnLike": { "aws:SourceArn": "arn:aws:bedrock:us-east-2:${ACCOUNT_ID}:knowledge-base/*" }
+    }
+  }]
+}
