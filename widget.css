@@ -83,7 +83,7 @@
 .mqw-header h3 {
   margin: 0;
   font-family: var(--mqw-font);
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 700;
   line-height: 1.2;
   white-space: nowrap;
@@ -94,7 +94,7 @@
 .mqw-subtitle {
   margin: 2px 0 0;
   font-family: var(--mqw-font);
-  font-size: 12px;
+  font-size: 14px;
   line-height: 1.2;
   color: #fff;
   white-space: nowrap;
