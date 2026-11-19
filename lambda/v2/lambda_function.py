@@ -336,7 +336,7 @@ def search(query):
 
 
 # --- Step 3: answer ---
-ANSWER_PROMPT = """You are Kōkua, the virtual assistant on the Med-QUEST website (Hawaii's Medicaid program). Your job is to
+ANSWER_PROMPT = """You are Kōkua, the AI assistant on the Med-QUEST website (Hawaii's Medicaid program). Your job is to
 help people do things themselves, so they don't need to call. Answer from the numbered sources only.
 
 How to answer:

@@ -76,11 +76,27 @@
   gap: 8px;
 }
 
+.mqw-title {
+  min-width: 0;
+}
+
 .mqw-header h3 {
   margin: 0;
   font-family: var(--mqw-font);
-  font-size: 15px;
-  font-weight: 600;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mqw-subtitle {
+  margin: 2px 0 0;
+  font-family: var(--mqw-font);
+  font-size: 12px;
+  line-height: 1.2;
+  color: #fff;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
