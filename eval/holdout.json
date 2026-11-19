@@ -1,0 +1,404 @@
+{
+ "about": "Held-out questions, written 2026-11-18 from site pages the main set doesn't cover. Never tune the bot against these: they're for an honest score. Same format as questions.json. ho-spenddown and ho-dsnp were moved to the main set on 2026-11-18 after the bot was fixed for them.",
+ "site": "https://medquest.hawaii.gov",
+ "questions": [
+  {
+   "id": "ho-fraud",
+   "category": "Held-out",
+   "behaviour": "answer",
+   "call_ok": false,
+   "turns": [
+    "How do I report someone who is getting Medicaid but shouldn't be?"
+   ],
+   "must": [
+    [
+     "587-8444"
+    ]
+   ],
+   "must_not": [],
+   "links": [
+    "https://medquest.hawaii.gov/en/members-applicants/fraud-prevention"
+   ],
+   "reference": "Call the Investigations Office of the Benefits, Employment & Support Services Division at (808) 587-8444. Each health plan also has a fraud hotline.",
+   "source": "/en/members-applicants/fraud-prevention"
+  },
+  {
+   "id": "ho-ombudsman",
+   "category": "Held-out",
+   "behaviour": "answer",
+   "call_ok": false,
+   "turns": [
+    "My health plan keeps ignoring my complaint. Who else can help me?"
+   ],
+   "must": [
+    [
+     "ombudsman"
+    ],
+    [
+     "488-7988"
+    ]
+   ],
+   "must_not": [],
+   "links": [
+    "https://medquest.hawaii.gov/en/resources/medicaid-ombudsman"
+   ],
+   "reference": "The Hawaii Medicaid Ombudsman helps members with problems with their QUEST Integration health plan, including grievances and appeals: toll-free 1-888-488-7988, O'ahu (808) 746-3324, TTY 711.",
+   "source": "/en/resources/medicaid-ombudsman"
+  },
+  {
+   "id": "ho-going-home",
+   "category": "Held-out",
+   "behaviour": "answer",
+   "call_ok": false,
+   "turns": [
+    "My dad has been in a nursing home for months and wants to move back home. Is there a program that helps with that?"
+   ],
+   "must": [
+    [
+     "Going Home Plus"
+    ]
+   ],
+   "must_not": [],
+   "links": [
+    "https://medquest.hawaii.gov/en/members-applicants/already-covered/going-home-plus"
+   ],
+   "reference": "Going Home Plus helps Medicaid members who have lived in a hospital, nursing facility or ICF/ID for at least 60 days in a row move back into the community, including help finding housing and services. Open to all islands.",
+   "source": "/en/members-applicants/already-covered/going-home-plus"
+  },
+  {
+   "id": "ho-sms-stop",
+   "category": "Held-out",
+   "behaviour": "answer",
+   "call_ok": false,
+   "turns": [
+    "How do I stop getting text messages from Med-QUEST?"
+   ],
+   "must": [
+    [
+     "STOP"
+    ],
+    [
+     "45421"
+    ]
+   ],
+   "must_not": [],
+   "links": [
+    "https://medquest.hawaii.gov/en/sms"
+   ],
+   "reference": "Text STOP to 45421; you'll get a confirmation and no more messages. Text HELP to 45421 for help.",
+   "source": "/en/sms"
+  },
+  {
+   "id": "ho-epsdt",
+   "category": "Held-out",
+   "behaviour": "answer",
+   "call_ok": false,
+   "turns": [
+    "What is EPSDT?"
+   ],
+   "must": [
+    [
+     "21",
+     "twenty-one",
+     "under 21"
+    ],
+    [
+     "screening",
+     "preventive",
+     "preventative"
+    ]
+   ],
+   "must_not": [],
+   "links": [
+    "https://medquest.hawaii.gov/en/members-applicants/quest-integration-coverage/epsdt"
+   ],
+   "reference": "Early and Periodic Screening, Diagnostic and Treatment: preventive and comprehensive care (medical, mental and behavioral health, dental, treatment) for Medicaid members from birth up to age 21.",
+   "source": "/en/members-applicants/quest-integration-coverage/epsdt"
+  },
+  {
+   "id": "ho-ride-notice",
+   "category": "Held-out",
+   "behaviour": "answer",
+   "call_ok": false,
+   "turns": [
+    "How far ahead do I have to schedule a ride to my doctor?"
+   ],
+   "must": [
+    [
+     "48"
+    ]
+   ],
+   "must_not": [],
+   "links": [
+    "https://medquest.hawaii.gov/en/members-applicants/quest-integration-coverage/nemt"
+   ],
+   "reference": "At least 48 hours before the appointment, through your health plan; urgent visits within 24 hours can be booked with less notice.",
+   "source": "/en/members-applicants/quest-integration-coverage/nemt"
+  },
+  {
+   "id": "ho-ride-cost",
+   "category": "Held-out",
+   "behaviour": "answer",
+   "call_ok": false,
+   "turns": [
+    "Do I have to pay for a Medicaid ride?"
+   ],
+   "must": [
+    [
+     "no cost",
+     "free",
+     "no charge",
+     "no extra charge",
+     "don't have to pay",
+     "do not have to pay"
+    ]
+   ],
+   "must_not": [],
+   "links": [
+    "https://medquest.hawaii.gov/en/members-applicants/quest-integration-coverage/nemt"
+   ],
+   "reference": "No: a covered Non-Emergency Medical Transportation ride costs nothing.",
+   "source": "/en/members-applicants/quest-integration-coverage/nemt"
+  },
+  {
+   "id": "ho-cwip",
+   "category": "Held-out",
+   "behaviour": "answer",
+   "call_ok": false,
+   "turns": [
+    "What is the Hawaii Child Wellness Incentive Program and how do I apply?"
+   ],
+   "must": [
+    [
+     "1193"
+    ],
+    [
+     "mydhs",
+     "Hawaii_CWIP",
+     "email",
+     "HCWIP@dhs.hawaii.gov"
+    ]
+   ],
+   "must_not": [],
+   "links": [
+    "https://medquest.hawaii.gov/en/members-applicants/already-covered/Hawaii_CWIP",
+    "mydhs.hawaii.gov",
+    "1193"
+   ],
+   "reference": "A pilot paying parents on Medicaid $50 for each child's yearly well-child exam (children under 18). Steps: take the child for the exam, have the doctor complete section 2 of Form DHS 1193, then submit it through the program's web page or the MyDHS portal (mydhs.hawaii.gov), by email to HCWIP@dhs.hawaii.gov, by fax to 808-900-7978, or by mail. The card arrives in 4-6 weeks.",
+   "source": "/en/members-applicants/already-covered/Hawaii_CWIP"
+  },
+  {
+   "id": "ho-help-applying",
+   "category": "Held-out",
+   "behaviour": "answer",
+   "call_ok": true,
+   "turns": [
+    "Is there someone who can help me fill out my application?"
+   ],
+   "must": [
+    [
+     "community partner",
+     "office",
+     "800-316-8005"
+    ]
+   ],
+   "must_not": [],
+   "links": [
+    "https://medquest.hawaii.gov/en/resources/community-partners",
+    "https://medquest.hawaii.gov/en/contact-us",
+    "https://medquest.hawaii.gov/en/members-applicants/member-resources"
+   ],
+   "reference": "Community partners can help with applications; you can also call 1-800-316-8005 or visit an eligibility office.",
+   "source": "/en/members-applicants/member-resources"
+  },
+  {
+   "id": "ho-hearing",
+   "category": "Held-out",
+   "behaviour": "answer",
+   "call_ok": false,
+   "turns": [
+    "Are hearing tests covered?"
+   ],
+   "must": [
+    [
+     "hearing"
+    ],
+    [
+     "yes",
+     "covered",
+     "covers"
+    ]
+   ],
+   "must_not": [],
+   "links": [
+    "https://medquest.hawaii.gov/en/members-applicants/quest-integration-coverage/medical-benefits"
+   ],
+   "reference": "Yes: vision and hearing services are covered QUEST Integration benefits; check details with your health plan.",
+   "source": "/en/members-applicants/quest-integration-coverage/medical-benefits"
+  },
+  {
+   "id": "ho-foster",
+   "category": "Held-out",
+   "behaviour": "answer",
+   "call_ok": false,
+   "turns": [
+    "I aged out of foster care and I'm 22 now. Can I still get Medicaid?"
+   ],
+   "must": [
+    [
+     "26"
+    ]
+   ],
+   "must_not": [],
+   "links": [
+    "https://medquest.hawaii.gov/en/members-applicants/get-started/programs"
+   ],
+   "reference": "Yes, likely: Med-QUEST covers certain former foster care youth from 18 up to age 26. Apply to confirm.",
+   "source": "/en/members-applicants/get-started/programs"
+  },
+  {
+   "id": "ho-handbook",
+   "category": "Held-out",
+   "behaviour": "answer",
+   "call_ok": false,
+   "turns": [
+    "Where can I find the QUEST member handbook?"
+   ],
+   "must": [
+    [
+     "handbook"
+    ]
+   ],
+   "must_not": [],
+   "links": [
+    "member-handbook",
+    "Member.Handbook",
+    "member-resources"
+   ],
+   "reference": "On the member resources / member handbook pages: the 2025 QUEST Member Handbook, plus each health plan's own handbook.",
+   "source": "/en/members-applicants/member-resources"
+  },
+  {
+   "id": "ho-toothache",
+   "category": "Held-out",
+   "behaviour": "answer",
+   "call_ok": false,
+   "turns": [
+    "I have a really bad toothache. Is emergency dental covered for adults?"
+   ],
+   "must": [
+    [
+     "emergency"
+    ],
+    [
+     "21",
+     "adult"
+    ]
+   ],
+   "must_not": [],
+   "links": [
+    "https://medquest.hawaii.gov/en/members-applicants/quest-integration-coverage/Dental"
+   ],
+   "reference": "Yes: for adults 21 and older, emergency and palliative dental treatment is covered. Call CCMC to find a dentist (O'ahu 808-792-1070, neighbor islands 1-888-792-1070).",
+   "source": "/en/members-applicants/quest-integration-coverage/Dental"
+  },
+  {
+   "id": "ho-pidgin-renew",
+   "category": "Held-out",
+   "behaviour": "answer",
+   "call_ok": true,
+   "turns": [
+    "Eh how I renew my Med-QUEST? I wen get one pink letter"
+   ],
+   "must": [
+    [
+     "mybenefits",
+     "online"
+    ],
+    [
+     "renew"
+    ]
+   ],
+   "must_not": [],
+   "links": [
+    "medical.mybenefits.hawaii.gov",
+    "medicaid-renewal-info"
+   ],
+   "reference": "Renew online at medical.mybenefits.hawaii.gov, with the form that came with the pink letter, or by phone at 1-800-316-8005.",
+   "source": "/en/members-applicants/already-covered/medicaid-renewal-info"
+  },
+  {
+   "id": "ho-follow-fraud",
+   "category": "Held-out",
+   "behaviour": "answer",
+   "call_ok": false,
+   "turns": [
+    "Which health plans can I pick from?",
+    "Which one of those has the fraud hotline 1-855-973-1852?"
+   ],
+   "must": [
+    [
+     "AlohaCare",
+     "Aloha Care"
+    ]
+   ],
+   "must_not": [],
+   "links": [],
+   "reference": "AlohaCare's 24/7 fraud reporting hotline is 1-855-973-1852.",
+   "source": "/en/members-applicants/fraud-prevention"
+  },
+  {
+   "id": "ho-rehab",
+   "category": "Held-out",
+   "behaviour": "answer",
+   "call_ok": false,
+   "turns": [
+    "Does Med-QUEST pay for drug or alcohol rehab?"
+   ],
+   "must": [
+    [
+     "substance",
+     "alcohol",
+     "drug",
+     "chemical dependency"
+    ],
+    [
+     "yes",
+     "covered",
+     "covers"
+    ]
+   ],
+   "must_not": [],
+   "links": [
+    "https://medquest.hawaii.gov/en/members-applicants/quest-integration-coverage/medical-benefits"
+   ],
+   "reference": "Yes: medically necessary alcohol and chemical dependency services and substance abuse treatment are covered behavioral health services.",
+   "source": "/en/members-applicants/quest-integration-coverage/medical-benefits"
+  },
+  {
+   "id": "ho-moving-away",
+   "category": "Held-out",
+   "behaviour": "answer",
+   "call_ok": true,
+   "turns": [
+    "I'm moving to California next month. What happens to my Med-QUEST?"
+   ],
+   "must": [
+    [
+     "report",
+     "update",
+     "let med-quest know",
+     "tell med-quest"
+    ]
+   ],
+   "must_not": [],
+   "links": [
+    "https://medquest.hawaii.gov/en/members-applicants/already-covered/change-update-information",
+    "medical.mybenefits.hawaii.gov"
+   ],
+   "reference": "Report the move (change of address) to Med-QUEST; Med-QUEST covers Hawai'i residents, so apply for Medicaid in the new state.",
+   "source": "/en/faq"
+  }
+ ]
+}
