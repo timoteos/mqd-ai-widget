@@ -8,6 +8,8 @@ dotenv.config({ path: path.join(__dirname, ".env") });
 const app = express();
 const port = Number(process.env.PORT || 3000);
 const chatApiUrl = process.env.CHAT_API_URL;
+// The v2 endpoint only answers requests that carry its API key.
+const chatApiKey = process.env.CHAT_API_KEY;
 // Local testing only: calls the Lambda through the AWS CLI. Never set on Render.
 const chatLambda = process.env.CHAT_LAMBDA;
 const requestTimeoutMs = Number(process.env.REQUEST_TIMEOUT_MS || 90000);
@@ -102,7 +104,8 @@ app.post("/widget-api/chat", async (req, res) => {
       upstream = await fetch(chatApiUrl, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          ...(chatApiKey ? { "x-api-key": chatApiKey } : {})
         },
         body: req.rawBody || JSON.stringify({
           question: questionText,
