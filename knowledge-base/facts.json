@@ -1,0 +1,81 @@
+{
+ "about": "Contact details the bot may state, each copied from the page in 'source'. The bot is shown these with every answer, and a phone number in an answer that is neither here nor in what search found is removed. NEEDS a staff check: set 'checked' to the date when confirmed.",
+ "checked": null,
+ "med_quest": {
+  "source": "https://medquest.hawaii.gov/en/contact-us",
+  "Customer Services Call Center": "1-800-316-8005 (toll-free); O'ahu 808-524-3370",
+  "TTY": "711",
+  "Fax": "1-800-576-5504",
+  "Email": "MQDCustomerSupport@dhs.hawaii.gov",
+  "Online portal (apply, renew, report changes)": "https://medical.mybenefits.hawaii.gov",
+  "Login help desk (portal sign-in problems)": "1-808-900-7979, Monday to Friday 7:45 am to 4:30 pm, MQDLoginHelpDesk@dhsie.com",
+  "Text messages": "text STOP to 45421 to stop, HELP to 45421 for help"
+ },
+ "offices": {
+  "source": "https://medquest.hawaii.gov/en/contact-us",
+  "Honolulu": "1350 S. King Street, Suite 200, Honolulu, HI 96814",
+  "Kapolei": "Kakuhihewa State Office Building, 601 Kamokila Boulevard, Room 415, Kapolei, HI 96707",
+  "Waipahu": "94-275 Mokuola Street, Suite 301, Waipahu, HI 96797",
+  "East Hawaii (Hilo)": "1404 Kilauea Avenue, Hilo, HI 96720",
+  "West Hawaii (Kailua-Kona)": "Lanihau Professional Center, 75-5591 Palani Road, Suite 3004, Kailua-Kona, HI 96740",
+  "Maui (Wailuku)": "Millyard Plaza, 210 Imi Kala Street, Suite 101, Wailuku, HI 96793",
+  "Lanai": "730 Lanai Avenue, Lanai City, HI 96763",
+  "Molokai (Kaunakakai)": "State Civic Center, 65 Makaena Street, Room 110, Kaunakakai, HI 96748",
+  "Kauai (Lihue)": "Dynasty Court, 4473 Pahee Street, Suite A, Lihue, HI 96766"
+ },
+ "health_plans": {
+  "source": "https://medquest.hawaii.gov/en/members-applicants/get-started/health-plans; rides: https://medquest.hawaii.gov/en/members-applicants/quest-integration-coverage/nemt; fraud: https://medquest.hawaii.gov/en/members-applicants/fraud-prevention",
+  "AlohaCare": {
+   "member services": "1-877-973-0712",
+   "website": "https://www.alohacare.org",
+   "rides": "1-877-973-0712 or https://transdevhealthsolutions.com/alohacare/",
+   "fraud hotline": "1-855-973-1852"
+  },
+  "HMSA": {
+   "member services": "1-800-440-0640",
+   "website": "https://hmsa.com/health-plans/quest/",
+   "rides": "1-800-440-0640 or https://www.modivcare.com/facilities/hmsa/",
+   "fraud hotline": "808-948-5166 (O'ahu), 1-888-398-6445"
+  },
+  "Kaiser Permanente": {
+   "member services": "1-800-651-2237",
+   "website": "http://kpquest.org/",
+   "rides": "1-855-735-1226",
+   "fraud hotline": "808-432-5330, 1-800-651-2237"
+  },
+  "'Ohana Health Plan": {
+   "member services": "1-888-846-4262",
+   "website": "https://www.ohanahealthplan.com",
+   "rides": "1-888-846-4262",
+   "fraud hotline": "1-866-678-8355"
+  },
+  "UnitedHealthcare Community Plan": {
+   "member services": "1-888-980-8728",
+   "website": "http://www.uhccommunityplan.com/hawaii-medicaid-plans",
+   "rides": "1-888-777-3844",
+   "fraud hotline": "1-844-359-7736"
+  }
+ },
+ "other_lines": {
+  "Dental: find a dentist (Community Case Management Corp)": {
+   "number": "808-792-1070 (O'ahu), 1-888-792-1070 (toll-free)",
+   "source": "https://medquest.hawaii.gov/en/members-applicants/quest-integration-coverage/Dental"
+  },
+  "Medicaid Ombudsman (problems with a health plan)": {
+   "number": "1-888-488-7988 (toll-free), 808-746-3324 (O'ahu), TTY 711",
+   "source": "https://medquest.hawaii.gov/en/resources/medicaid-ombudsman"
+  },
+  "Report someone getting Medicaid they shouldn't (BESSD Investigations)": {
+   "number": "808-587-8444",
+   "source": "https://medquest.hawaii.gov/en/members-applicants/fraud-prevention"
+  },
+  "Report provider fraud (Medicaid Investigator)": {
+   "number": "808-692-8072",
+   "source": "https://medquest.hawaii.gov/en/members-applicants/fraud-prevention"
+  },
+  "Hawaii Child Wellness Incentive Program (accommodations)": {
+   "number": "808-900-5570, HCWIP@dhs.hawaii.gov",
+   "source": "https://medquest.hawaii.gov/en/members-applicants/already-covered/Hawaii_CWIP"
+  }
+ }
+}
