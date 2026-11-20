@@ -188,7 +188,7 @@ def lambda_handler(event, context):
 
         results = search(plan["search"])
         answer, used = write_answer(question, history, results, plan["language"])
-        answer = keep_known_numbers(keep_known_links(answer, results), results)
+        answer = keep_known_numbers(use_https(keep_known_links(answer, results)), results)
         print(json.dumps({"used": [[r["type"], r["title"][:60], r["form_numbers"]] for r in used]}))
         verdict = check_answer(answer, question, results, plan["language"])
         if verdict == "blocked":
@@ -441,6 +441,12 @@ def keep_known_numbers(answer, results):
         print(f"removed unknown phone number ending {phone_key(m.group(0))[-4:]}")
         return "(see the [Contact Us page](https://medquest.hawaii.gov/en/contact-us) for the number)"
     return PHONE_NUMBER.sub(check, answer)
+
+
+def use_https(answer):
+    """Give every web address https://. The widget only links https:// and
+    tel: addresses, and many site pages still link http://."""
+    return re.sub(r"\bhttp://", "https://", answer)
 
 
 def keep_known_links(answer, results):

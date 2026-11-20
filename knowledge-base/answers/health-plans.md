@@ -14,11 +14,11 @@ There are five QUEST Integration health plans:
 
 | Health plan | Phone | Website |
 |---|---|---|
-| AlohaCare | 1-877-973-0712 | [alohacare.org](http://www.alohacare.org) |
+| AlohaCare | 1-877-973-0712 | [alohacare.org](https://www.alohacare.org) |
 | HMSA | 1-800-440-0640 | [hmsa.com/health-plans/quest](https://hmsa.com/health-plans/quest/) |
-| Kaiser Permanente | 1-800-651-2237 | [kpquest.org](http://kpquest.org/) |
+| Kaiser Permanente | 1-800-651-2237 | [kpquest.org](https://kpquest.org/) |
 | 'Ohana Health Plan | 1-888-846-4262 | [ohanahealthplan.com](https://www.ohanahealthplan.com) |
-| UnitedHealthcare Community Plan | 1-888-980-8728 | [uhccommunityplan.com/hawaii-medicaid-plans](http://www.uhccommunityplan.com/hawaii-medicaid-plans) |
+| UnitedHealthcare Community Plan | 1-888-980-8728 | [uhccommunityplan.com/hawaii-medicaid-plans](https://www.uhccommunityplan.com/hawaii-medicaid-plans) |
 
 Availability depends on enrollment limits.
 
