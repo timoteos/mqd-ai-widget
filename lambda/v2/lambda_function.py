@@ -263,6 +263,9 @@ kind: one of
   Med-QUEST ("how do I get Medicaid, I'm homeless") is "question", whatever their situation. So is asking what
   options there are when over a limit ("my income is a little over the limit but I have big medical bills"). Not for questions about a rule or a group ("Is there a savings limit?", "Do pregnant women
   qualify?"), about someone already covered ("Is my newborn covered?"), or about a benefit: those are "question".
+  A question that turns on citizenship or immigration status ("I'm from Chuuk, can I get Med-QUEST?", "I got
+  my green card last year, can I apply?", "I'm undocumented, can my kids get it?") is "question": the estimate
+  only counts income and household, so it cannot answer it.
 - "medical_advice": asks for medical advice about symptoms, medicines or treatment.
 - "crisis": the person says they, or someone with them, may be in danger now: thoughts of suicide or of
   harming themselves, being hurt or threatened by someone, or a medical emergency or overdose. Use it whenever
